@@ -1,14 +1,15 @@
+import ServerErrors from '@/components/server-errors';
 import { Page, PageHeader, Section } from '@/components/sostenpyme';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useSustainability } from '@/hooks/use-sustainability';
 import { useTranslation } from '@/i18n';
 import AppLayout from '@/layouts/app-layout';
-import { updateDemo, useDemo } from '@/lib/demo-store';
 import { type BreadcrumbItem } from '@/types';
 import type { Company, CompanySize, SectorKey } from '@/types/sostenpyme';
-import { Head } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 import { Check } from 'lucide-react';
 import { useState, type FormEventHandler } from 'react';
 
@@ -17,22 +18,20 @@ const sizes: CompanySize[] = ['micro', 'small', 'medium'];
 
 export default function CompanyPage() {
     const { t } = useTranslation();
-    const demo = useDemo();
-    const [form, setForm] = useState<Company>(demo.company);
+    const { company } = useSustainability();
+    const { data: form, setData, put, processing } = useForm({ ...company });
     const [saved, setSaved] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [{ title: t('company.title'), href: '/company' }];
 
     function set<K extends keyof Company>(key: K, value: Company[K]) {
-        setForm((current) => ({ ...current, [key]: value }));
+        setData((current) => ({ ...current, [key]: value }));
         setSaved(false);
     }
 
-    // Com o backend: router.put(route('company.update'), form)
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        updateDemo((state) => ({ ...state, company: form }));
-        setSaved(true);
+        put('/company', { preserveScroll: true, onSuccess: () => setSaved(true) });
     };
 
     return (
@@ -40,6 +39,7 @@ export default function CompanyPage() {
             <Head title={t('company.title')} />
             <Page className="max-w-3xl">
                 <PageHeader title={t('company.title')} description={t('company.description')} />
+                <ServerErrors />
 
                 <Section>
                     <form onSubmit={submit} className="grid gap-6">
@@ -86,7 +86,7 @@ export default function CompanyPage() {
                                 <Input
                                     id="workers"
                                     type="number"
-                                    min={1}
+                                    min={0}
                                     required
                                     value={form.workers}
                                     onChange={(e) => set('workers', Number(e.target.value))}
@@ -96,11 +96,13 @@ export default function CompanyPage() {
 
                         <div className="grid gap-2">
                             <Label htmlFor="region">{t('company.region')}</Label>
-                            <Input id="region" value={form.region} onChange={(e) => set('region', e.target.value)} />
+                            <Input id="region" required value={form.region} onChange={(e) => set('region', e.target.value)} />
                         </div>
 
                         <div className="flex items-center gap-4">
-                            <Button type="submit">{t('company.save')}</Button>
+                            <Button type="submit" disabled={processing}>
+                                {t('company.save')}
+                            </Button>
                             {saved && (
                                 <span role="status" className="text-muted-foreground flex items-center gap-1.5 text-sm">
                                     <Check className="size-4" aria-hidden />

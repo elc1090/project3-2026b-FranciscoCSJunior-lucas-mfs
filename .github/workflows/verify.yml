@@ -1,0 +1,65 @@
+name: Verify application
+
+on:
+  push:
+    branches: [main, backend]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: sostenpyme_test
+          POSTGRES_USER: sostenpyme
+          POSTGRES_PASSWORD: ci-only-password
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U sostenpyme -d sostenpyme_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_sqlite, pdo_pgsql, mbstring
+          coverage: none
+      - run: composer install --no-interaction --prefer-dist
+      - run: cp .env.example .env
+      - run: php artisan test
+      - run: vendor/bin/pint --test
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm build
+      - name: Build production image
+        run: docker build -t sostenpyme:ci .
+      - name: Start production container against PostgreSQL
+        run: |
+          docker run -d --name sostenpyme --network host \
+            -e PORT=10000 -e APP_ENV=production -e APP_DEBUG=false \
+            -e APP_KEY=base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA= \
+            -e APP_URL=http://localhost:10000 -e DB_CONNECTION=pgsql \
+            -e DB_HOST=127.0.0.1 -e DB_DATABASE=sostenpyme_test \
+            -e DB_USERNAME=sostenpyme -e DB_PASSWORD=ci-only-password \
+            -e DB_SSLMODE=prefer -e SESSION_DRIVER=database -e CACHE_STORE=database \
+            sostenpyme:ci
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://localhost:10000/up; then break; fi
+            sleep 2
+          done
+          curl --fail --silent http://localhost:10000/up
+          curl --fail --silent http://localhost:10000/login > /tmp/sostenpyme-login.html
+          grep -q '/build/assets/' /tmp/sostenpyme-login.html
+      - name: Container diagnostics
+        if: always()
+        run: docker logs sostenpyme 2>/dev/null || true

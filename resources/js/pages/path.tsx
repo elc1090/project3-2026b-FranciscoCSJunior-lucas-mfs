@@ -1,30 +1,28 @@
+import ServerErrors from '@/components/server-errors';
 import { DimensionTag, Page, PageHeader } from '@/components/sostenpyme';
 import { Checkbox } from '@/components/ui/checkbox';
-import { pathGoals } from '@/data/catalog';
+import { useSustainability } from '@/hooks/use-sustainability';
 import { useTranslation } from '@/i18n';
 import AppLayout from '@/layouts/app-layout';
-import { updateDemo, useDemo } from '@/lib/demo-store';
 import { cn } from '@/lib/utils';
 import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
+
+import { useState } from 'react';
 
 const levels = [1, 2, 3] as const;
 
 export default function Path() {
     const { t, tl } = useTranslation();
-    const { completedGoals } = useDemo();
+    const { completedGoals, pathGoals } = useSustainability();
 
     const breadcrumbs: BreadcrumbItem[] = [{ title: t('path.title'), href: '/path' }];
     const completed = new Set(completedGoals);
+    const [saving, setSaving] = useState(false);
 
-    // Com o backend: router.post(route('goals.toggle', goalId))
     function toggle(goalId: string) {
-        updateDemo((state) => ({
-            ...state,
-            completedGoals: state.completedGoals.includes(goalId)
-                ? state.completedGoals.filter((id) => id !== goalId)
-                : [...state.completedGoals, goalId],
-        }));
+        setSaving(true);
+        router.post(`/goals/${encodeURIComponent(goalId)}/toggle`, {}, { preserveScroll: true, onFinish: () => setSaving(false) });
     }
 
     return (
@@ -32,6 +30,7 @@ export default function Path() {
             <Head title={t('path.title')} />
             <Page>
                 <PageHeader title={t('path.title')} description={t('path.description')} />
+                <ServerErrors />
                 <p className="mb-8 font-medium">{t('path.progress', { done: completed.size, total: pathGoals.length })}</p>
 
                 <ol className="relative flex flex-col gap-10 border-l-2 pl-6 md:pl-8">
@@ -61,7 +60,12 @@ export default function Path() {
                                                         done && 'bg-muted',
                                                     )}
                                                 >
-                                                    <Checkbox checked={done} onCheckedChange={() => toggle(goal.id)} className="mt-0.5" />
+                                                    <Checkbox
+                                                        disabled={saving}
+                                                        checked={done}
+                                                        onCheckedChange={() => toggle(goal.id)}
+                                                        className="mt-0.5"
+                                                    />
                                                     <span className="flex flex-col gap-1.5">
                                                         <span>{tl(goal.title)}</span>
                                                         <DimensionTag dimension={goal.dimension} />

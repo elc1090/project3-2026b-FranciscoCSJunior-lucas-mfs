@@ -1,8 +1,10 @@
 {
     "private": true,
     "type": "module",
+    "packageManager": "pnpm@11.25.0",
     "scripts": {
         "build": "vite build",
+        "typecheck": "tsc --noEmit",
         "build:ssr": "vite build && vite build --ssr",
         "dev": "vite",
         "format": "prettier --write resources/",

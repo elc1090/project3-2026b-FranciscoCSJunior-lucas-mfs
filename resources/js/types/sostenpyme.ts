@@ -66,7 +66,9 @@ export interface PathGoal {
 }
 
 export interface DiagnosisSnapshot {
+    id: string;
     date: string; // AAAA-MM-DD
+    total: number;
     scores: Record<AreaKey, number>;
 }
 

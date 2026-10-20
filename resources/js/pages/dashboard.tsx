@@ -1,10 +1,9 @@
 import { DimensionBars, DimensionTag, Page, PageHeader, Section } from '@/components/sostenpyme';
 import { Button } from '@/components/ui/button';
-import { pathGoals } from '@/data/catalog';
+import { useSustainability } from '@/hooks/use-sustainability';
 import { useTranslation } from '@/i18n';
 import AppLayout from '@/layouts/app-layout';
-import { resetDemo, useDemo } from '@/lib/demo-store';
-import { areaDimension, isComplete, priorities, totalScore } from '@/lib/scoring';
+import { areaDimension } from '@/lib/scoring';
 import { cn } from '@/lib/utils';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
@@ -12,17 +11,16 @@ import { Check } from 'lucide-react';
 
 export default function Dashboard() {
     const { t, tl } = useTranslation();
-    const { company, answers, plan, completedGoals, history } = useDemo();
+    const { company, plan, completedGoals, history, pathGoals, totalScore: total, priorities, complete } = useSustainability();
 
     const breadcrumbs: BreadcrumbItem[] = [{ title: t('home.title'), href: '/dashboard' }];
-    const total = totalScore(answers);
-    const topPriorities = priorities(answers, company.sector).slice(0, 3);
+    const topPriorities = priorities.slice(0, 3);
     const done = plan.filter((a) => a.status === 'done').length;
 
     const steps = [
-        { label: t('home.stepCompany'), href: '/company', complete: Boolean(company.name) },
-        { label: t('home.stepDiagnosis'), href: '/diagnosis', complete: isComplete(answers, company.sector) },
-        { label: t('home.stepResults'), href: '/results', complete: isComplete(answers, company.sector) },
+        { label: t('home.stepCompany'), href: '/company', complete: Boolean(company.name && company.region) },
+        { label: t('home.stepDiagnosis'), href: '/diagnosis', complete: complete },
+        { label: t('home.stepResults'), href: '/results', complete: complete },
         { label: t('home.stepPlan'), href: '/plan', complete: plan.length > 0 },
         { label: t('home.stepTracking'), href: '/tracking', complete: history.length > 1 },
     ];
@@ -38,16 +36,27 @@ export default function Dashboard() {
 
                 <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
                     <Section title={t('home.scoresTitle')}>
-                        <div className="mb-6 flex items-baseline gap-3">
-                            <span className="font-display text-6xl leading-none font-semibold tabular-nums">{total.percent}</span>
-                            <span className="text-muted-foreground">
-                                {t('results.total')}, {t('results.points', { points: total.points, max: total.max })}
-                            </span>
-                        </div>
-                        <DimensionBars answers={answers} />
-                        <Button asChild variant="outline" className="mt-6">
-                            <Link href="/results">{t('home.seeResults')}</Link>
-                        </Button>
+                        {!complete ? (
+                            <>
+                                <p>{t('results.incomplete')}</p>
+                                <Button asChild className="mt-4">
+                                    <Link href="/diagnosis">{t('results.goToDiagnosis')}</Link>
+                                </Button>
+                            </>
+                        ) : (
+                            <>
+                                <div className="mb-6 flex items-baseline gap-3">
+                                    <span className="font-display text-6xl leading-none font-semibold tabular-nums">{total.percent}</span>
+                                    <span className="text-muted-foreground">
+                                        {t('results.total')}, {t('results.points', { points: total.points, max: total.max })}
+                                    </span>
+                                </div>
+                                <DimensionBars />
+                                <Button asChild variant="outline" className="mt-6">
+                                    <Link href="/results">{t('home.seeResults')}</Link>
+                                </Button>
+                            </>
+                        )}
                     </Section>
 
                     <div className="flex flex-col gap-5">
@@ -100,13 +109,6 @@ export default function Dashboard() {
                         ))}
                     </ol>
                 </section>
-
-                <p className="text-muted-foreground mt-10 flex flex-wrap items-center gap-2 text-xs">
-                    {t('demo.notice')}
-                    <button type="button" onClick={resetDemo} className="hover:text-foreground underline underline-offset-2">
-                        {t('demo.reset')}
-                    </button>
-                </p>
             </Page>
         </AppLayout>
     );

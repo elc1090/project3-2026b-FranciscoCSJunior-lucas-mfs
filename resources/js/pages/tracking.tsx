@@ -1,8 +1,8 @@
 import { dimStyle, Page, PageHeader, Section } from '@/components/sostenpyme';
 import { Button } from '@/components/ui/button';
+import { useSustainability } from '@/hooks/use-sustainability';
 import { useTranslation } from '@/i18n';
 import AppLayout from '@/layouts/app-layout';
-import { useDemo } from '@/lib/demo-store';
 import { areaDimension, areas } from '@/lib/scoring';
 import { cn } from '@/lib/utils';
 import { type BreadcrumbItem } from '@/types';
@@ -11,7 +11,7 @@ import { ArrowDown, ArrowUp, Minus } from 'lucide-react';
 
 export default function Tracking() {
     const { t, formatDate } = useTranslation();
-    const { history, plan } = useDemo();
+    const { history, plan } = useSustainability();
 
     const breadcrumbs: BreadcrumbItem[] = [{ title: t('tracking.title'), href: '/tracking' }];
     const sorted = [...history].sort((a, b) => a.date.localeCompare(b.date));
@@ -99,11 +99,10 @@ export default function Tracking() {
                     <Section title={t('tracking.history')}>
                         <ul className="flex flex-col gap-2">
                             {[...sorted].reverse().map((snapshot) => {
-                                const avg = Math.round(Object.values(snapshot.scores).reduce((s, v) => s + v, 0) / areas.length);
                                 return (
-                                    <li key={snapshot.date} className="flex justify-between border-b pb-2 last:border-0">
+                                    <li key={snapshot.id} className="flex justify-between border-b pb-2 last:border-0">
                                         <span>{formatDate(snapshot.date)}</span>
-                                        <span className="font-display font-semibold tabular-nums">{avg}</span>
+                                        <span className="font-display font-semibold tabular-nums">{snapshot.total}</span>
                                     </li>
                                 );
                             })}

@@ -1,14 +1,14 @@
+import ServerErrors from '@/components/server-errors';
 import { AnswerScale, dimStyle, Page, PageHeader, SdgTags } from '@/components/sostenpyme';
 import { Button } from '@/components/ui/button';
-import { dimensions } from '@/data/catalog';
+import { useSustainability } from '@/hooks/use-sustainability';
 import { useTranslation } from '@/i18n';
 import AppLayout from '@/layouts/app-layout';
-import { updateDemo, useDemo } from '@/lib/demo-store';
-import { areaScores, questionsForSector, type Answers } from '@/lib/scoring';
+import { dimensions, type Answers } from '@/lib/scoring';
 import { cn } from '@/lib/utils';
 import { type BreadcrumbItem } from '@/types';
 import type { DimensionKey, Question } from '@/types/sostenpyme';
-import { Head, router } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 
 interface Step {
@@ -21,13 +21,15 @@ interface Step {
 
 export default function Diagnosis() {
     const { t, tl } = useTranslation();
-    const { company, answers: savedAnswers } = useDemo();
-    const [answers, setAnswers] = useState<Answers>(savedAnswers);
+    const { answers: savedAnswers, applicable: all } = useSustainability();
+    const { data, setData, post, processing } = useForm<{ answers: Answers }>({
+        answers: Object.fromEntries(all.filter((q) => savedAnswers[q.id] !== undefined).map((q) => [q.id, savedAnswers[q.id]])),
+    });
+    const { answers } = data;
     const [stepIndex, setStepIndex] = useState(0);
     const [showMissing, setShowMissing] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [{ title: t('diagnosis.title'), href: '/diagnosis' }];
-    const all = questionsForSector(company.sector);
 
     const steps: Step[] = dimensions.map((dimension) => ({
         key: dimension,
@@ -56,19 +58,12 @@ export default function Diagnosis() {
         window.scrollTo({ top: 0 });
     }
 
-    // Com o backend: router.post(route('diagnosis.store'), { answers }) — o servidor calcula e salva a pontuação.
     function finish() {
         if (missing > 0) {
             setShowMissing(true);
             return;
         }
-        const today = new Date().toISOString().slice(0, 10);
-        updateDemo((state) => ({
-            ...state,
-            answers,
-            history: [...state.history.filter((h) => h.date !== today), { date: today, scores: areaScores(answers) }],
-        }));
-        router.visit('/results');
+        post('/diagnosis');
     }
 
     return (
@@ -76,6 +71,7 @@ export default function Diagnosis() {
             <Head title={t('diagnosis.title')} />
             <Page className="max-w-4xl">
                 <PageHeader title={t('diagnosis.title')} description={t('diagnosis.description')} />
+                <ServerErrors />
 
                 <nav aria-label={t('diagnosis.title')} className="mb-8">
                     <ol className="flex flex-wrap gap-2">
@@ -137,7 +133,7 @@ export default function Diagnosis() {
                             </div>
                             <AnswerScale
                                 value={answers[question.id]}
-                                onChange={(value) => setAnswers((current) => ({ ...current, [question.id]: value }))}
+                                onChange={(value) => setData('answers', { ...answers, [question.id]: value })}
                                 dimension={question.dimension}
                                 labelledBy={`q-${question.id}`}
                             />
@@ -152,7 +148,9 @@ export default function Diagnosis() {
                         </Button>
                     )}
                     {isLast ? (
-                        <Button onClick={finish}>{t('diagnosis.finish')}</Button>
+                        <Button onClick={finish} disabled={processing}>
+                            {t('diagnosis.finish')}
+                        </Button>
                     ) : (
                         <Button onClick={() => goTo(stepIndex + 1)}>{t('diagnosis.next')}</Button>
                     )}

@@ -29,15 +29,16 @@ Com Inertia, o React fica dentro do projeto Laravel: cada rota do Laravel retorn
 
 ```bash
 composer install
-npm install
+corepack enable
+pnpm install --frozen-lockfile
 cp .env.example .env
 php artisan key:generate
-php artisan migrate
+php artisan migrate --seed
 ```
 
 **Windows:**
 - O banco local é SQLite. Se der erro `could not find driver`, abra o `php.ini` (descubra onde fica com `php --ini`) e adicione as linhas `extension=pdo_sqlite` e `extension=sqlite3`.
-- No PowerShell, `npm` pode ser bloqueado ("a execução de scripts foi desabilitada"). Use `npm.cmd` no lugar (ex.: `npm.cmd install`) ou rode no Prompt de Comando/Git Bash.
+- No PowerShell, `npm` pode ser bloqueado ("a execução de scripts foi desabilitada"). Use `pnpm.cmd` no lugar de `pnpm` ou rode no Prompt de Comando/Git Bash.
 
 ### Para desenvolver (dois terminais)
 
@@ -46,7 +47,7 @@ php artisan serve
 ```
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 Abra http://localhost:8000 e crie uma conta em "Regístrate". (O atalho `composer dev` não funciona bem no Windows, porque o `pail` precisa da extensão `pcntl`.)
@@ -64,7 +65,7 @@ php artisan test
 ### Autenticação (veio do starter kit do Laravel)
 Cadastro, login, logout, recuperação de senha, configurações de perfil/senha/aparência e exclusão de conta. Senhas com hash bcrypt. Os 26 testes do starter kit passam.
 
-### Frontend completo das 8 páginas (com dados de demonstração)
+### Frontend completo das 8 páginas (integrado ao backend)
 
 | Rota | Página | O que faz |
 |---|---|---|
@@ -82,8 +83,8 @@ Outras coisas prontas:
 - Identidade visual própria (cores por dimensão, fontes, ícone), modo claro/escuro e layout responsivo.
 - `/` redireciona para `/dashboard` (ou para o login, se não estiver logado).
 
-### ⚠️ Importante: os dados ainda são falsos
-Hoje **nada do SOSTENPYME é salvo no banco**. As páginas usam `resources/js/lib/demo-store.ts`, que guarda tudo no `localStorage` do navegador, e o catálogo (perguntas, recomendações, metas, ODS) está fixo em `resources/js/data/catalog.ts`. Trocar isso pelo backend real é o trabalho principal que falta.
+### Dados reais
+As oito páginas usam props do Inertia e persistem as alterações no Laravel. O armazenamento de demonstração foi removido. O catálogo está em `database/data/catalog.json`, carregado pelos seeders. Consulte [o contrato de integração](docs/backend.md).
 
 ---
 
@@ -92,12 +93,11 @@ Hoje **nada do SOSTENPYME é salvo no banco**. As páginas usam `resources/js/li
 | Arquivo | Para que serve |
 |---|---|
 | `resources/js/types/sostenpyme.ts` | **Contrato frontend ↔ backend**: formato dos dados que cada página espera |
-| `resources/js/data/catalog.ts` | Catálogo: 20 perguntas + 2 do setor alimentos, 22 recomendações, 12 metas, 17 ODS (em `es` e `pt`). **Base para os seeders** |
-| `resources/js/lib/scoring.ts` | Regras de pontuação e prioridades (**o backend precisa repetir este cálculo**) |
-| `resources/js/lib/demo-store.ts` | Dados temporários no navegador — **apagar quando o backend estiver pronto** |
-| `resources/js/pages/*.tsx` | As páginas. Comentários `// Com o backend: ...` indicam onde chamar o servidor |
+| `database/data/catalog.json` | Catálogo: 20 perguntas + 2 do setor alimentos, 22 recomendações, 12 metas, 17 ODS (em `es` e `pt`), usado pelos seeders |
+| `app/Services/DiagnosisScoring.php` | Cálculo das notas e prioridades no servidor |
+| `resources/js/pages/*.tsx` | Páginas integradas às rotas do Laravel |
 | `resources/js/i18n/es.ts` e `pt.ts` | Textos da interface |
-| `routes/web.php` | As rotas das páginas (hoje só renderizam, sem dados) |
+| `routes/web.php` | Rotas autenticadas de leitura e gravação |
 
 ---
 
@@ -112,11 +112,13 @@ Hoje **nada do SOSTENPYME é salvo no banco**. As páginas usam `resources/js/li
 - Prioridades ordenadas da área com menor nota para a maior.
 - Perguntas do setor **não entram na nota**; só sugerem ações.
 
-Implementação de referência: `resources/js/lib/scoring.ts`.
+Implementação: `app/Services/DiagnosisScoring.php`.
 
 ---
 
 ## O que o Lucas precisa fazer (backend)
+
+**Implementação do backend adicionada em 20/10/2026.** Banco, catálogo, criação de empresa, controllers, rotas, policies, validações, cálculo no servidor e idiomas foram implementados. Dockerfile e Blueprint do Render estão preparados. Veja [contrato das rotas e instruções de deploy](docs/backend.md). As páginas React também foram integradas às props/rotas. A publicação Render/Neon está em andamento; confira o estado atual em `docs/backend.md`.
 
 ### 1. Banco de dados (migrations + models)
 
@@ -137,7 +139,7 @@ Sugestão de tabelas — os nomes de campos seguem `types/sostenpyme.ts`:
 Dica: manter o campo `code` (`env-1`, `r-env-1`...) evita mexer no frontend, que usa esses códigos como `id`.
 
 ### 2. Seeders
-Copiar o conteúdo de `resources/js/data/catalog.ts` para seeders (`QuestionSeeder`, `RecommendationSeeder`, `PathGoalSeeder`, `SdgSeeder`).
+Copiar o conteúdo de `database/data/catalog.json` para seeders (`QuestionSeeder`, `RecommendationSeeder`, `PathGoalSeeder`, `SdgSeeder`).
 
 ### 3. Cadastro cria a empresa
 Em `app/Http/Controllers/Auth/RegisteredUserController.php`, ao criar o usuário, criar também a `Company` dele (pode começar só com o nome e completar em "Mi empresa").
@@ -154,7 +156,7 @@ Substituir os `Route::inertia(...)` de `routes/web.php` por controllers que envi
 | Remover ação do plano | `DELETE /plan/{action}` → `plan.destroy` | `pages/plan.tsx` |
 | Marcar/desmarcar meta da rota | `POST /goals/{goal}/toggle` → `goals.toggle` | `pages/path.tsx` |
 
-Depois que cada rota existir, me avisa: eu troco o `updateDemo(...)` da página pela chamada `router.post/patch/delete` e passo a ler das props.
+Integração concluída: as páginas usam props e chamadas Inertia; os formulários exibem erros do servidor e bloqueiam envios duplicados.
 
 ### 5. Segurança (é o que a professora mais vai avaliar)
 - Todas as rotas acima dentro do middleware `auth` (já estão).
@@ -168,7 +170,7 @@ As mensagens de validação do Laravel ainda saem em inglês. Ler o cookie `loca
 
 ### 7. Deploy (Render + Neon)
 - Criar o banco PostgreSQL no Neon e usar a URL no `DB_URL`/`DB_*` do Render.
-- Dockerfile para o Render (PHP + Node para rodar `npm run build`).
+- Dockerfile para o Render (PHP + Node para rodar `pnpm build`).
 - No start do container: `php artisan migrate --force` (e os seeders do catálogo na primeira vez).
 - `SESSION_DRIVER=database` e `CACHE_STORE=database` (o disco do Render é apagado a cada deploy).
 - Fazer um primeiro deploy cedo, mesmo só com o login funcionando.
@@ -177,7 +179,7 @@ As mensagens de validação do Laravel ainda saem em inglês. Ler o cookie `loca
 
 ## A validar com a equipe do Chile
 
-Estas partes foram **propostas nossas** e estão marcadas em `catalog.ts`:
+Estas partes foram **propostas nossas** e estão marcadas no catálogo:
 - Qual ODS corresponde a cada pergunta.
 - Textos das 22 recomendações, das 12 metas da Ruta sostenible e das descrições dos ODS.
 - Divisão Trabajadores (soc-1 a 3) × Comunidad (soc-4 e 5).
