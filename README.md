@@ -32,7 +32,7 @@ composer install
 npm install
 cp .env.example .env
 php artisan key:generate
-php artisan migrate
+php artisan migrate --seed
 ```
 
 **Windows:**
@@ -82,8 +82,8 @@ Outras coisas prontas:
 - Identidade visual própria (cores por dimensão, fontes, ícone), modo claro/escuro e layout responsivo.
 - `/` redireciona para `/dashboard` (ou para o login, se não estiver logado).
 
-### ⚠️ Importante: os dados ainda são falsos
-Hoje **nada do SOSTENPYME é salvo no banco**. As páginas usam `resources/js/lib/demo-store.ts`, que guarda tudo no `localStorage` do navegador, e o catálogo (perguntas, recomendações, metas, ODS) está fixo em `resources/js/data/catalog.ts`. Trocar isso pelo backend real é o trabalho principal que falta.
+### ⚠️ Importante: integração das páginas pendente
+O backend já persiste os dados da empresa e entrega props pelo Inertia. As páginas React ainda usam `resources/js/lib/demo-store.ts`, que guarda dados de demonstração no `localStorage`, e o catálogo fixo em `resources/js/data/catalog.ts`. Falta o responsável pelo frontend trocar essas leituras pelas props e usar as rotas implementadas, conforme [o contrato de integração](docs/backend.md).
 
 ---
 
@@ -117,6 +117,8 @@ Implementação de referência: `resources/js/lib/scoring.ts`.
 ---
 
 ## O que o Lucas precisa fazer (backend)
+
+**Implementação do backend adicionada em 20/10/2026.** Banco, catálogo, criação de empresa, controllers, rotas, policies, validações, cálculo no servidor e idiomas foram implementados. Dockerfile e Blueprint do Render estão preparados. Veja [contrato das rotas e instruções de deploy](docs/backend.md). A integração das páginas React com as props/rotas continua com o responsável pelo frontend, conforme combinado abaixo; a publicação Render/Neon exige acesso às contas.
 
 ### 1. Banco de dados (migrations + models)
 
