@@ -1,5 +1,5 @@
 import { DimensionTag, Page, PageHeader } from '@/components/sostenpyme';
-import { questions, sdgs } from '@/data/catalog';
+import { useSustainability } from '@/hooks/use-sustainability';
 import { useTranslation } from '@/i18n';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
@@ -7,6 +7,7 @@ import { Head } from '@inertiajs/react';
 
 export default function Explore() {
     const { t, tl } = useTranslation();
+    const { questions, sdgs } = useSustainability();
     const breadcrumbs: BreadcrumbItem[] = [{ title: t('explore.title'), href: '/explore' }];
 
     return (

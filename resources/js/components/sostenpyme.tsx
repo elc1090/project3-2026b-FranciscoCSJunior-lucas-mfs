@@ -1,7 +1,7 @@
 // Componentes visuais compartilhados pelas páginas do SOSTENPYME.
-import { dimensions } from '@/data/catalog';
+import { useSustainability } from '@/hooks/use-sustainability';
 import { useTranslation } from '@/i18n';
-import { areaScores, dimensionScore, PRIORITY_THRESHOLD, type Answers } from '@/lib/scoring';
+import { dimensions, PRIORITY_THRESHOLD } from '@/lib/scoring';
 import { cn } from '@/lib/utils';
 import type { ActionStatus, AnswerValue, DimensionKey } from '@/types/sostenpyme';
 import { TriangleAlert } from 'lucide-react';
@@ -81,15 +81,15 @@ export function ScoreBar({ label, score, dimension, sub = false }: { label: stri
 }
 
 /** As 4 dimensões, com Social seguida dos sub-resultados Trabajadores e Comunidad. */
-export function DimensionBars({ answers }: { answers: Answers }) {
+export function DimensionBars() {
     const { t } = useTranslation();
-    const scores = areaScores(answers);
+    const { scores, dimensionScores } = useSustainability();
 
     return (
         <div className="flex flex-col gap-4">
             {dimensions.map((dimension) => (
                 <div key={dimension} className="flex flex-col gap-2">
-                    <ScoreBar label={t(`dimension.${dimension}`)} score={dimensionScore(dimension, answers)} dimension={dimension} />
+                    <ScoreBar label={t(`dimension.${dimension}`)} score={dimensionScores[dimension]} dimension={dimension} />
                     {dimension === 'social' && (
                         <>
                             <ScoreBar sub label={t('dimension.workers')} score={scores.workers} dimension="social" />

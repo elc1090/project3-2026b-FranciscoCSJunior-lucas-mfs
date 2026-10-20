@@ -37,7 +37,12 @@ class SustainabilityController extends Controller
                 'id' => (string) $a->id, 'recommendationId' => $a->recommendation->code, 'owner' => $a->owner,
                 'dueDate' => $a->due_date ?? '', 'indicator' => $a->indicator, 'status' => $a->status]),
             'completedGoals' => $company->goals()->pluck('code'),
-            'history' => $company->diagnoses()->orderBy('id')->get()->map(fn ($d) => ['date' => $d->created_at->toDateString(), 'scores' => $d->scores]),
+            'history' => $company->diagnoses()->with('answers.question')->orderBy('id')->get()->map(function ($d) {
+                $general = $d->answers->filter(fn ($a) => $a->question->sector === null);
+
+                return ['id' => (string) $d->id, 'date' => $d->created_at->toDateString(), 'scores' => $d->scores,
+                    'total' => $general->isEmpty() ? 0 : (int) round($general->sum('value') / ($general->count() * 3) * 100)];
+            }),
             'questions' => $questions->map(fn ($q) => array_filter(['id' => $q->code, 'dimension' => $q->dimension,
                 'group' => $q->group, 'sector' => $q->sector, 'text' => $localized($q, 'text'), 'sdgs' => $q->sdgs], fn ($v) => $v !== null)),
             'recommendations' => Recommendation::with('question')->orderBy('id')->get()->map(fn ($r) => [

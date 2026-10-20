@@ -1,35 +1,35 @@
+import ServerErrors from '@/components/server-errors';
 import { DimensionBars, DimensionTag, Page, PageHeader, SdgTags, Section } from '@/components/sostenpyme';
 import { Button } from '@/components/ui/button';
+import { useSustainability } from '@/hooks/use-sustainability';
 import { useTranslation } from '@/i18n';
 import AppLayout from '@/layouts/app-layout';
-import { updateDemo, useDemo } from '@/lib/demo-store';
-import { areaDimension, isComplete, priorities, PRIORITY_THRESHOLD, questionOf, totalScore } from '@/lib/scoring';
+import { areaDimension, PRIORITY_THRESHOLD } from '@/lib/scoring';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { Check, Plus } from 'lucide-react';
+import { useState } from 'react';
 
 export default function Results() {
     const { t, tl } = useTranslation();
-    const { company, answers, plan } = useDemo();
+    const { plan, totalScore: total, priorities, questionOf, complete } = useSustainability();
+    const [adding, setAdding] = useState<string | null>(null);
 
     const breadcrumbs: BreadcrumbItem[] = [{ title: t('results.title'), href: '/results' }];
-    const total = totalScore(answers);
     const inPlan = new Set(plan.map((a) => a.recommendationId));
 
-    // Com o backend: router.post(route('plan.store'), { recommendation_id })
     function addToPlan(recommendationId: string) {
-        updateDemo((state) => ({
-            ...state,
-            plan: [...state.plan, { id: crypto.randomUUID(), recommendationId, owner: '', dueDate: '', indicator: '', status: 'pending' }],
-        }));
+        setAdding(recommendationId);
+        router.post('/plan', { recommendationId }, { preserveScroll: true, onFinish: () => setAdding(null) });
     }
 
-    if (!isComplete(answers, company.sector)) {
+    if (!complete) {
         return (
             <AppLayout breadcrumbs={breadcrumbs}>
                 <Head title={t('results.title')} />
                 <Page>
                     <PageHeader title={t('results.title')} />
+                    <ServerErrors />
                     <Section>
                         <p>{t('results.incomplete')}</p>
                         <Button asChild className="mt-4">
@@ -46,6 +46,7 @@ export default function Results() {
             <Head title={t('results.title')} />
             <Page>
                 <PageHeader title={t('results.title')} description={t('results.description', { threshold: PRIORITY_THRESHOLD })} />
+                <ServerErrors />
 
                 <div className="grid gap-5 lg:grid-cols-[14rem_1fr]">
                     <Section className="flex flex-col justify-center">
@@ -54,7 +55,7 @@ export default function Results() {
                         <p className="text-muted-foreground mt-2 text-sm">{t('results.points', { points: total.points, max: total.max })}</p>
                     </Section>
                     <Section>
-                        <DimensionBars answers={answers} />
+                        <DimensionBars />
                         <p className="text-muted-foreground mt-6 text-sm">{t('results.socialNote')}</p>
                     </Section>
                 </div>
@@ -64,7 +65,7 @@ export default function Results() {
                     <p className="text-muted-foreground mt-1">{t('results.prioritiesDescription')}</p>
 
                     <div className="mt-6 flex flex-col gap-8">
-                        {priorities(answers, company.sector).map((priority) => (
+                        {priorities.map((priority) => (
                             <div key={priority.area}>
                                 <div className="mb-3 flex items-baseline gap-3">
                                     <DimensionTag dimension={areaDimension(priority.area)} label={t(`dimension.${priority.area}`)} />
@@ -85,7 +86,7 @@ export default function Results() {
                                                 </div>
                                                 <Button
                                                     variant={added ? 'secondary' : 'default'}
-                                                    disabled={added}
+                                                    disabled={added || adding !== null}
                                                     onClick={() => addToPlan(rec.id)}
                                                     className="shrink-0"
                                                 >

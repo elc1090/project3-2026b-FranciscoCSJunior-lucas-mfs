@@ -14,6 +14,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Render terminates HTTPS before forwarding requests to Apache.
+        if (getenv('APP_ENV') === 'production') {
+            $middleware->trustProxies(at: '*');
+        }
         $middleware->encryptCookies(except: ['locale']);
         $middleware->web(append: [
             SetLocale::class,

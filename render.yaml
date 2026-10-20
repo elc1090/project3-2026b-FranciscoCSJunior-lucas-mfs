@@ -2,6 +2,7 @@ services:
   - type: web
     name: sostenpyme
     runtime: docker
+    branch: backend
     plan: free
     healthCheckPath: /up
     envVars:

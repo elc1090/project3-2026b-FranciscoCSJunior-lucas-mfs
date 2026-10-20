@@ -81,7 +81,8 @@ class SustainabilityTest extends TestCase
         $this->assertSame(100, $user->company->diagnoses()->first()->scores['environmental']);
         $this->post('/diagnosis', ['answers' => $this->answers(0)])->assertRedirect('/results');
         $this->assertDatabaseCount('diagnoses', 2);
-        $this->get('/tracking')->assertInertia(fn (Assert $page) => $page->component('tracking')->has('history', 2)->where('scores.workers', 0));
+        $this->get('/tracking')->assertInertia(fn (Assert $page) => $page->component('tracking')->has('history', 2)->where('scores.workers', 0)
+            ->where('history.0.total', 100)->where('history.1.total', 0));
     }
 
     public function test_diagnosis_rejects_incomplete_unknown_and_out_of_range_answers(): void
