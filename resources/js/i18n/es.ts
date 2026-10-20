@@ -117,7 +117,7 @@ const es = {
     },
     home: {
         title: 'Inicio',
-        subtitle: '{sector}, {workers} trabajadores, {region}',
+        workers: '{count} trabajadores',
         steps: 'Cómo funciona',
         stepCompany: 'Completa el perfil de tu empresa',
         stepDiagnosis: 'Responde el diagnóstico',

@@ -119,7 +119,7 @@ const pt: Messages = {
     },
     home: {
         title: 'Início',
-        subtitle: '{sector}, {workers} trabalhadores, {region}',
+        workers: '{count} trabalhadores',
         steps: 'Como funciona',
         stepCompany: 'Complete o perfil da sua empresa',
         stepDiagnosis: 'Responda o diagnóstico',

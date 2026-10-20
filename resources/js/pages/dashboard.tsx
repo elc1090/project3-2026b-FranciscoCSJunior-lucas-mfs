@@ -31,7 +31,9 @@ export default function Dashboard() {
             <Page>
                 <PageHeader
                     title={company.name}
-                    description={t('home.subtitle', { sector: t(`sector.${company.sector}`), workers: company.workers, region: company.region })}
+                    description={[t(`sector.${company.sector}`), company.workers > 0 && t('home.workers', { count: company.workers }), company.region]
+                        .filter(Boolean)
+                        .join(', ')}
                 />
 
                 <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
