@@ -170,7 +170,7 @@ As mensagens de validação do Laravel ainda saem em inglês. Ler o cookie `loca
 
 ### 7. Deploy (Render + Neon)
 - Criar o banco PostgreSQL no Neon e usar a URL no `DB_URL`/`DB_*` do Render.
-- Dockerfile para o Render (PHP + Node para rodar `npm run build`).
+- Dockerfile para o Render (PHP + Node para rodar `pnpm build`).
 - No start do container: `php artisan migrate --force` (e os seeders do catálogo na primeira vez).
 - `SESSION_DRIVER=database` e `CACHE_STORE=database` (o disco do Render é apagado a cada deploy).
 - Fazer um primeiro deploy cedo, mesmo só com o login funcionando.
