@@ -13,10 +13,10 @@ https://sostenpyme.onrender.com
 
 ## Desenvolvedores
 - Aluno: Francisco das Chagas Sousa Júnior  
-- Curso: Ciência da Computação
+  Curso: Ciência da Computação
 
-- Aluno: Lucas Medeiros Figueiredo dos Santos
-- Curso: Sistemas de Informação
+- Aluno: Lucas Medeiros Figueiredo dos Santos  
+  Curso: Sistemas de Informação
 
 
 
