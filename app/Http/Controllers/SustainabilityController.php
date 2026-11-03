@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CarbonRecord;
 use App\Models\Company;
+use App\Models\IsoRequirement;
 use App\Models\PathGoal;
 use App\Models\PlanAction;
 use App\Models\Question;
 use App\Models\Recommendation;
 use App\Models\Sdg;
+use App\Services\CarbonFootprint;
 use App\Services\DiagnosisScoring;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -22,7 +25,7 @@ class SustainabilityController extends Controller
         return $request->user()->company()->firstOrCreate([], ['name' => $request->user()->name]);
     }
 
-    public function show(Request $request, DiagnosisScoring $scoring)
+    public function show(Request $request, DiagnosisScoring $scoring, CarbonFootprint $carbon)
     {
         $company = $this->company($request);
         Gate::authorize('view', $company);
@@ -49,6 +52,15 @@ class SustainabilityController extends Controller
                 'id' => $r->code, 'questionId' => $r->question->code, 'title' => $localized($r, 'title'), 'description' => $localized($r, 'description')]),
             'pathGoals' => PathGoal::orderBy('id')->get()->map(fn ($g) => ['id' => $g->code, 'level' => $g->level, 'dimension' => $g->dimension, 'title' => $localized($g, 'title')]),
             'sdgs' => Sdg::orderBy('number')->get()->map(fn ($s) => ['number' => $s->number, 'title' => $localized($s, 'title'), 'description' => $localized($s, 'description')]),
+            'carbonRecords' => $company->carbonRecords()->orderBy('period')->get()->map(fn ($r) => [
+                'id' => (string) $r->id, 'period' => $r->period->format('Y-m'),
+                'inputs' => ['electricityKwh' => $r->electricity_kwh, 'naturalGasM3' => $r->natural_gas_m3, 'lpgKg' => $r->lpg_kg,
+                    'dieselL' => $r->diesel_l, 'gasolineL' => $r->gasoline_l],
+                ...$carbon->calculate($r)]),
+            'carbonFactors' => CarbonFootprint::FACTORS,
+            'isoRequirements' => IsoRequirement::orderBy('id')->get()->map(fn ($i) => ['id' => $i->code, 'clause' => $i->clause,
+                'title' => $localized($i, 'title'), 'description' => $localized($i, 'description')]),
+            'completedIsoRequirements' => $company->isoRequirements()->pluck('code'),
             ...$scoring->calculate($questions->filter(fn ($q) => ! $q->sector || $q->sector === $company->sector), $answers),
         ]);
     }
@@ -136,6 +148,48 @@ class SustainabilityController extends Controller
         DB::transaction(function () use ($company, $goal) {
             $company->newQuery()->whereKey($company->id)->lockForUpdate()->firstOrFail();
             $company->goals()->toggle($goal->id);
+        });
+
+        return back();
+    }
+
+    public function storeCarbon(Request $request)
+    {
+        $company = $this->company($request);
+        Gate::authorize('update', $company);
+        $fields = ['electricityKwh' => 'electricity_kwh', 'naturalGasM3' => 'natural_gas_m3', 'lpgKg' => 'lpg_kg',
+            'dieselL' => 'diesel_l', 'gasolineL' => 'gasoline_l'];
+        $data = $request->validate([
+            'period' => ['required', 'date_format:Y-m', 'before_or_equal:'.now()->format('Y-m')],
+            ...array_fill_keys(array_keys($fields), ['nullable', 'numeric', 'min:0', 'max:100000000']),
+        ]);
+        $values = [];
+        foreach ($fields as $input => $column) {
+            $values[$column] = $data[$input] ?? 0;
+        }
+        // Um registro por mês: salvar o mesmo mês de novo substitui os valores.
+        $period = $data['period'].'-01';
+        $record = $company->carbonRecords()->whereDate('period', $period)->first() ?? $company->carbonRecords()->make(['period' => $period]);
+        $record->fill($values)->save();
+
+        return back();
+    }
+
+    public function destroyCarbon(CarbonRecord $record)
+    {
+        Gate::authorize('delete', $record);
+        $record->delete();
+
+        return back();
+    }
+
+    public function toggleIso(Request $request, IsoRequirement $requirement)
+    {
+        $company = $this->company($request);
+        Gate::authorize('update', $company);
+        DB::transaction(function () use ($company, $requirement) {
+            $company->newQuery()->whereKey($company->id)->lockForUpdate()->firstOrFail();
+            $company->isoRequirements()->toggle($requirement->id);
         });
 
         return back();

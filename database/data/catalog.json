@@ -823,5 +823,199 @@
         "pt": "Trabalhar junto com outras organizações, escolas e programas de apoio."
       }
     }
+  ],
+  "isoRequirements": [
+    {
+      "id": "iso-4-1",
+      "clause": "4.1",
+      "title": {
+        "es": "Contexto de la empresa",
+        "pt": "Contexto da empresa"
+      },
+      "description": {
+        "es": "Identificar los temas internos y externos que afectan el desempeño ambiental.",
+        "pt": "Identificar os fatores internos e externos que afetam o desempenho ambiental."
+      }
+    },
+    {
+      "id": "iso-4-2",
+      "clause": "4.2",
+      "title": {
+        "es": "Partes interesadas",
+        "pt": "Partes interessadas"
+      },
+      "description": {
+        "es": "Conocer qué esperan vecinos, clientes, autoridades y trabajadores en temas ambientales.",
+        "pt": "Saber o que vizinhos, clientes, autoridades e trabalhadores esperam em temas ambientais."
+      }
+    },
+    {
+      "id": "iso-4-3",
+      "clause": "4.3",
+      "title": {
+        "es": "Alcance del sistema de gestión ambiental",
+        "pt": "Escopo do sistema de gestão ambiental"
+      },
+      "description": {
+        "es": "Definir qué procesos, sedes y actividades cubre la gestión ambiental.",
+        "pt": "Definir quais processos, locais e atividades a gestão ambiental abrange."
+      }
+    },
+    {
+      "id": "iso-5-2",
+      "clause": "5.2",
+      "title": {
+        "es": "Política ambiental",
+        "pt": "Política ambiental"
+      },
+      "description": {
+        "es": "Tener una política ambiental escrita, aprobada por la dirección y conocida por el equipo.",
+        "pt": "Ter uma política ambiental escrita, aprovada pela direção e conhecida pela equipe."
+      }
+    },
+    {
+      "id": "iso-5-3",
+      "clause": "5.3",
+      "title": {
+        "es": "Roles y responsabilidades",
+        "pt": "Papéis e responsabilidades"
+      },
+      "description": {
+        "es": "Asignar quién es responsable de la gestión ambiental y de informar sus resultados.",
+        "pt": "Definir quem é responsável pela gestão ambiental e por relatar seus resultados."
+      }
+    },
+    {
+      "id": "iso-6-1-2",
+      "clause": "6.1.2",
+      "title": {
+        "es": "Aspectos ambientales",
+        "pt": "Aspectos ambientais"
+      },
+      "description": {
+        "es": "Listar los aspectos ambientales (consumos, residuos, emisiones) y cuáles son significativos.",
+        "pt": "Listar os aspectos ambientais (consumos, resíduos, emissões) e quais são significativos."
+      }
+    },
+    {
+      "id": "iso-6-1-3",
+      "clause": "6.1.3",
+      "title": {
+        "es": "Requisitos legales",
+        "pt": "Requisitos legais"
+      },
+      "description": {
+        "es": "Identificar las leyes y permisos ambientales que aplican y revisar su cumplimiento.",
+        "pt": "Identificar as leis e licenças ambientais aplicáveis e verificar seu cumprimento."
+      }
+    },
+    {
+      "id": "iso-6-2",
+      "clause": "6.2",
+      "title": {
+        "es": "Objetivos ambientales",
+        "pt": "Objetivos ambientais"
+      },
+      "description": {
+        "es": "Definir metas ambientales medibles, con responsable y plazo.",
+        "pt": "Definir metas ambientais mensuráveis, com responsável e prazo."
+      }
+    },
+    {
+      "id": "iso-7-2",
+      "clause": "7.2",
+      "title": {
+        "es": "Competencia y capacitación",
+        "pt": "Competência e capacitação"
+      },
+      "description": {
+        "es": "Capacitar a quienes realizan tareas con impacto ambiental.",
+        "pt": "Capacitar quem realiza tarefas com impacto ambiental."
+      }
+    },
+    {
+      "id": "iso-7-4",
+      "clause": "7.4",
+      "title": {
+        "es": "Comunicación",
+        "pt": "Comunicação"
+      },
+      "description": {
+        "es": "Definir qué, cuándo y a quién comunicar sobre temas ambientales.",
+        "pt": "Definir o que, quando e para quem comunicar sobre temas ambientais."
+      }
+    },
+    {
+      "id": "iso-7-5",
+      "clause": "7.5",
+      "title": {
+        "es": "Información documentada",
+        "pt": "Informação documentada"
+      },
+      "description": {
+        "es": "Mantener registros ordenados: política, procedimientos, mediciones y resultados.",
+        "pt": "Manter registros organizados: política, procedimentos, medições e resultados."
+      }
+    },
+    {
+      "id": "iso-8-1",
+      "clause": "8.1",
+      "title": {
+        "es": "Control operacional",
+        "pt": "Controle operacional"
+      },
+      "description": {
+        "es": "Establecer procedimientos para controlar los procesos con mayor impacto ambiental.",
+        "pt": "Estabelecer procedimentos para controlar os processos de maior impacto ambiental."
+      }
+    },
+    {
+      "id": "iso-8-2",
+      "clause": "8.2",
+      "title": {
+        "es": "Preparación ante emergencias",
+        "pt": "Preparação para emergências"
+      },
+      "description": {
+        "es": "Tener un plan ante derrames, incendios u otros incidentes ambientales, y practicarlo.",
+        "pt": "Ter um plano para vazamentos, incêndios ou outros incidentes ambientais, e praticá-lo."
+      }
+    },
+    {
+      "id": "iso-9-1",
+      "clause": "9.1",
+      "title": {
+        "es": "Seguimiento y medición",
+        "pt": "Monitoramento e medição"
+      },
+      "description": {
+        "es": "Medir periódicamente indicadores como consumo de energía, agua, residuos y emisiones.",
+        "pt": "Medir periodicamente indicadores como consumo de energia, água, resíduos e emissões."
+      }
+    },
+    {
+      "id": "iso-9-2",
+      "clause": "9.2",
+      "title": {
+        "es": "Auditoría interna",
+        "pt": "Auditoria interna"
+      },
+      "description": {
+        "es": "Revisar al menos una vez al año si la gestión ambiental funciona como se planificó.",
+        "pt": "Verificar ao menos uma vez por ano se a gestão ambiental funciona como planejado."
+      }
+    },
+    {
+      "id": "iso-10-2",
+      "clause": "10.2",
+      "title": {
+        "es": "No conformidades y mejora",
+        "pt": "Não conformidades e melhoria"
+      },
+      "description": {
+        "es": "Registrar los problemas detectados, corregirlos y evitar que se repitan.",
+        "pt": "Registrar os problemas encontrados, corrigi-los e evitar que se repitam."
+      }
+    }
   ]
 }

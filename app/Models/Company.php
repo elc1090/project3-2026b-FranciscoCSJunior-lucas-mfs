@@ -27,4 +27,14 @@ class Company extends Model
     {
         return $this->belongsToMany(PathGoal::class, 'company_goal');
     }
+
+    public function carbonRecords()
+    {
+        return $this->hasMany(CarbonRecord::class);
+    }
+
+    public function isoRequirements()
+    {
+        return $this->belongsToMany(IsoRequirement::class, 'company_iso_requirement');
+    }
 }

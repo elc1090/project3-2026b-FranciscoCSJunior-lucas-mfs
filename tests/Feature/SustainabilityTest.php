@@ -42,6 +42,7 @@ class SustainabilityTest extends TestCase
         $this->assertDatabaseCount('recommendations', 22);
         $this->assertDatabaseCount('path_goals', 12);
         $this->assertDatabaseCount('sdgs', 17);
+        $this->assertDatabaseCount('iso_requirements', 16);
         $this->assertDatabaseCount('users', 0);
     }
 
@@ -158,5 +159,46 @@ class SustainabilityTest extends TestCase
         $this->withUnencryptedCookie('locale', 'es')->put('/company', [])->assertSessionHasErrors([
             'name' => 'El campo nombre es obligatorio.',
         ]);
+    }
+
+    public function test_carbon_footprint_is_calculated_on_server_and_one_record_per_month(): void
+    {
+        $user = $this->account();
+        $this->actingAs($user)->post('/carbon', ['period' => '2026-09', 'electricityKwh' => 1000, 'dieselL' => 100, 'gasolineL' => 100])
+            ->assertSessionHasNoErrors();
+        $this->post('/carbon', ['period' => '2026-09', 'electricityKwh' => 2000])->assertSessionHasNoErrors();
+        $this->assertSame(1, $user->company->carbonRecords()->count());
+        $this->get('/carbon')->assertInertia(fn (Assert $page) => $page
+            ->where('carbonRecords.0.period', '2026-09')
+            ->where('carbonRecords.0.emissions.electricity', 580)
+            ->where('carbonRecords.0.emissions.transport', 0)
+            ->where('carbonRecords.0.total', 580));
+        $this->post('/carbon', ['period' => '2026-08', 'electricityKwh' => -5])->assertSessionHasErrors('electricityKwh');
+        $this->post('/carbon', ['period' => '2099-01'])->assertSessionHasErrors('period');
+    }
+
+    public function test_carbon_records_are_private(): void
+    {
+        $owner = $this->account();
+        $other = $this->account();
+        $this->actingAs($owner)->post('/carbon', ['period' => '2026-09', 'electricityKwh' => 100]);
+        $record = $owner->company->carbonRecords()->first();
+        $this->actingAs($other)->delete('/carbon/'.$record->id)->assertForbidden();
+        $this->get('/carbon')->assertInertia(fn (Assert $page) => $page->has('carbonRecords', 0));
+        $this->actingAs($owner)->delete('/carbon/'.$record->id)->assertRedirect();
+        $this->assertSame(0, $owner->company->carbonRecords()->count());
+    }
+
+    public function test_iso_checklist_toggle_affects_only_current_company(): void
+    {
+        $user = $this->account();
+        $other = $this->account();
+        $this->actingAs($user)->post('/iso/iso-5-2/toggle')->assertRedirect();
+        $this->assertSame(1, $user->company->isoRequirements()->count());
+        $this->assertSame(0, $other->company->isoRequirements()->count());
+        $this->get('/iso')->assertInertia(fn (Assert $page) => $page->has('isoRequirements', 16)->where('completedIsoRequirements', ['iso-5-2']));
+        $this->post('/iso/iso-5-2/toggle');
+        $this->assertSame(0, $user->company->isoRequirements()->count());
+        $this->post('/iso/inexistente/toggle')->assertNotFound();
     }
 }

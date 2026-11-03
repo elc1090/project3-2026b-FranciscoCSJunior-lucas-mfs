@@ -1,3 +1,5 @@
+import { CarbonSourceBars, useCarbonFormat } from '@/components/carbon-charts';
+import { IsoAdherence } from '@/components/iso-adherence';
 import { DimensionBars, DimensionTag, Page, PageHeader, Section } from '@/components/sostenpyme';
 import { Button } from '@/components/ui/button';
 import { useSustainability } from '@/hooks/use-sustainability';
@@ -11,7 +13,21 @@ import { Check } from 'lucide-react';
 
 export default function Dashboard() {
     const { t, tl } = useTranslation();
-    const { company, plan, completedGoals, history, pathGoals, totalScore: total, priorities, complete } = useSustainability();
+    const {
+        company,
+        plan,
+        completedGoals,
+        history,
+        pathGoals,
+        totalScore: total,
+        priorities,
+        complete,
+        carbonRecords,
+        isoRequirements,
+        completedIsoRequirements,
+    } = useSustainability();
+    const carbonFormat = useCarbonFormat();
+    const latestCarbon = carbonRecords.at(-1);
 
     const breadcrumbs: BreadcrumbItem[] = [{ title: t('home.title'), href: '/dashboard' }];
     const topPriorities = priorities.slice(0, 3);
@@ -86,6 +102,38 @@ export default function Dashboard() {
                             </Button>
                         </Section>
                     </div>
+                </div>
+
+                <div className="mt-5 grid gap-5 lg:grid-cols-[1.4fr_1fr]">
+                    <Section title={t('carbon.title')} description={latestCarbon ? carbonFormat.month(latestCarbon.period, 'long') : undefined}>
+                        {latestCarbon ? (
+                            <>
+                                <p className="font-display text-5xl leading-none font-semibold tabular-nums">
+                                    {carbonFormat.emissions(latestCarbon.total)}
+                                </p>
+                                <div className="mt-6">
+                                    <CarbonSourceBars record={latestCarbon} />
+                                </div>
+                                <Button asChild variant="outline" className="mt-6">
+                                    <Link href="/carbon">{t('carbon.seeMore')}</Link>
+                                </Button>
+                            </>
+                        ) : (
+                            <>
+                                <p>{t('carbon.empty')}</p>
+                                <Button asChild className="mt-4">
+                                    <Link href="/carbon">{t('carbon.goTo')}</Link>
+                                </Button>
+                            </>
+                        )}
+                    </Section>
+
+                    <Section title={t('iso.title')}>
+                        <IsoAdherence done={completedIsoRequirements.length} total={isoRequirements.length} />
+                        <Button asChild variant="outline" className="mt-6">
+                            <Link href="/iso">{t('iso.seeMore')}</Link>
+                        </Button>
+                    </Section>
                 </div>
 
                 <section className="mt-10">

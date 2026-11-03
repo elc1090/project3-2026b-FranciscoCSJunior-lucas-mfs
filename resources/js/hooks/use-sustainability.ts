@@ -2,9 +2,11 @@ import type { SharedData } from '@/types';
 import type {
     AnswerValue,
     AreaKey,
+    CarbonRecord,
     Company,
     DiagnosisSnapshot,
     DimensionKey,
+    IsoRequirement,
     PathGoal,
     PlanAction,
     Question,
@@ -23,6 +25,10 @@ export interface SustainabilityData extends SharedData {
     recommendations: Recommendation[];
     pathGoals: PathGoal[];
     sdgs: SdgInfo[];
+    carbonRecords: CarbonRecord[];
+    carbonFactors: Record<string, number>;
+    isoRequirements: IsoRequirement[];
+    completedIsoRequirements: string[];
     scores: Record<AreaKey, number>;
     dimensionScores: Record<DimensionKey, number>;
     totalScore: { points: number; max: number; percent: number };

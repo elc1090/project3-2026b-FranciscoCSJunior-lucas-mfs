@@ -77,3 +77,29 @@ export interface SdgInfo {
     title: Localized;
     description: Localized;
 }
+
+export type CarbonSource = 'electricity' | 'naturalGas' | 'lpg' | 'transport';
+
+export interface CarbonInputs {
+    electricityKwh: number;
+    naturalGasM3: number;
+    lpgKg: number;
+    dieselL: number;
+    gasolineL: number;
+}
+
+/** Consumo de um mês e as emissões calculadas no servidor (kg CO2e). */
+export interface CarbonRecord {
+    id: string;
+    period: string; // AAAA-MM
+    inputs: CarbonInputs;
+    emissions: Record<CarbonSource, number>;
+    total: number;
+}
+
+export interface IsoRequirement {
+    id: string;
+    clause: string;
+    title: Localized;
+    description: Localized;
+}

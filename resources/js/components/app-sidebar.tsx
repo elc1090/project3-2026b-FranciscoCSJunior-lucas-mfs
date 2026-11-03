@@ -4,7 +4,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { useTranslation } from '@/i18n';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, ChartNoAxesColumn, ClipboardList, House, ListChecks, Route, Store, TrendingUp } from 'lucide-react';
+import { BadgeCheck, BookOpen, ChartNoAxesColumn, ClipboardList, Cloud, House, ListChecks, Route, Store, TrendingUp } from 'lucide-react';
 import AppLogo from './app-logo';
 
 export function AppSidebar() {
@@ -18,6 +18,8 @@ export function AppSidebar() {
         { title: t('nav.path'), url: '/path', icon: Route },
         { title: t('nav.plan'), url: '/plan', icon: ListChecks },
         { title: t('nav.tracking'), url: '/tracking', icon: TrendingUp },
+        { title: t('nav.carbon'), url: '/carbon', icon: Cloud },
+        { title: t('nav.iso'), url: '/iso', icon: BadgeCheck },
         { title: t('nav.explore'), url: '/explore', icon: BookOpen },
     ];
 
