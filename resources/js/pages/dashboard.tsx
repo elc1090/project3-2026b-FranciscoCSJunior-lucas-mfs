@@ -52,32 +52,59 @@ export default function Dashboard() {
                         .join(', ')}
                 />
 
-                <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
-                    <Section title={t('home.scoresTitle')}>
-                        {!complete ? (
-                            <>
-                                <p>{t('results.incomplete')}</p>
-                                <Button asChild className="mt-4">
-                                    <Link href="/diagnosis">{t('results.goToDiagnosis')}</Link>
-                                </Button>
-                            </>
-                        ) : (
-                            <>
-                                <div className="mb-6 flex items-baseline gap-3">
-                                    <span className="font-display text-6xl leading-none font-semibold tabular-nums">{total.percent}</span>
-                                    <span className="text-muted-foreground">
-                                        {t('results.total')}, {t('results.points', { points: total.points, max: total.max })}
-                                    </span>
-                                </div>
-                                <DimensionBars />
-                                <Button asChild variant="outline" className="mt-6">
-                                    <Link href="/results">{t('home.seeResults')}</Link>
-                                </Button>
-                            </>
-                        )}
-                    </Section>
+                <div className="grid items-start gap-5 lg:grid-cols-2">
+                    <div className="flex flex-col gap-5">
+                        <Section title={t('home.scoresTitle')}>
+                            {!complete ? (
+                                <>
+                                    <p>{t('results.incomplete')}</p>
+                                    <Button asChild className="mt-4">
+                                        <Link href="/diagnosis">{t('results.goToDiagnosis')}</Link>
+                                    </Button>
+                                </>
+                            ) : (
+                                <>
+                                    <div className="mb-6 flex items-baseline gap-3">
+                                        <span className="font-display text-6xl leading-none font-semibold tabular-nums">{total.percent}</span>
+                                        <span className="text-muted-foreground">
+                                            {t('results.total')}, {t('results.points', { points: total.points, max: total.max })}
+                                        </span>
+                                    </div>
+                                    <DimensionBars />
+                                    <Button asChild variant="outline" className="mt-6">
+                                        <Link href="/results">{t('home.seeResults')}</Link>
+                                    </Button>
+                                </>
+                            )}
+                        </Section>
+
+                        <Section title={t('iso.title')}>
+                            <IsoAdherence done={completedIsoRequirements.length} total={isoRequirements.length} />
+                            <Button asChild variant="outline" className="mt-6">
+                                <Link href="/iso">{t('iso.seeMore')}</Link>
+                            </Button>
+                        </Section>
+                    </div>
 
                     <div className="flex flex-col gap-5">
+                        <Section title={t('carbon.title')} description={latestCarbon ? carbonFormat.month(latestCarbon.period, 'long') : undefined}>
+                            {latestCarbon ? (
+                                <>
+                                    <CarbonSourcePie record={latestCarbon} />
+                                    <Button asChild variant="outline" className="mt-6">
+                                        <Link href="/carbon">{t('carbon.seeMore')}</Link>
+                                    </Button>
+                                </>
+                            ) : (
+                                <>
+                                    <p>{t('carbon.empty')}</p>
+                                    <Button asChild className="mt-4">
+                                        <Link href="/carbon">{t('carbon.goTo')}</Link>
+                                    </Button>
+                                </>
+                            )}
+                        </Section>
+
                         <Section title={t('home.prioritiesTitle')}>
                             <ul className="flex flex-col gap-4">
                                 {topPriorities.map((priority) => (
@@ -102,33 +129,6 @@ export default function Dashboard() {
                             </Button>
                         </Section>
                     </div>
-                </div>
-
-                <div className="mt-5 grid gap-5 lg:grid-cols-[1.4fr_1fr]">
-                    <Section title={t('carbon.title')} description={latestCarbon ? carbonFormat.month(latestCarbon.period, 'long') : undefined}>
-                        {latestCarbon ? (
-                            <>
-                                <CarbonSourcePie record={latestCarbon} />
-                                <Button asChild variant="outline" className="mt-6">
-                                    <Link href="/carbon">{t('carbon.seeMore')}</Link>
-                                </Button>
-                            </>
-                        ) : (
-                            <>
-                                <p>{t('carbon.empty')}</p>
-                                <Button asChild className="mt-4">
-                                    <Link href="/carbon">{t('carbon.goTo')}</Link>
-                                </Button>
-                            </>
-                        )}
-                    </Section>
-
-                    <Section title={t('iso.title')}>
-                        <IsoAdherence done={completedIsoRequirements.length} total={isoRequirements.length} />
-                        <Button asChild variant="outline" className="mt-6">
-                            <Link href="/iso">{t('iso.seeMore')}</Link>
-                        </Button>
-                    </Section>
                 </div>
 
                 <section className="mt-10">
