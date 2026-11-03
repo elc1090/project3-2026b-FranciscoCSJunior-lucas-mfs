@@ -125,6 +125,12 @@
     --dim-social: #b8324a; /* Copihue */
     --dim-economic: #c08a1e; /* Maíz */
     --dim-governance: #2f5d7c; /* Pacífico */
+
+    /* Fontes da pegada de carbono (gráfico de rosca) - paleta validada para daltonismo */
+    --carbon-electricity: #2a78d6;
+    --carbon-natural-gas: #eb6834;
+    --carbon-lpg: #1baf7a;
+    --carbon-transport: #eda100;
 }
 
 .dark {
@@ -166,6 +172,11 @@
     --dim-social: #e46d82;
     --dim-economic: #e2b24f;
     --dim-governance: #74a6c9;
+
+    --carbon-electricity: #3987e5;
+    --carbon-natural-gas: #d95926;
+    --carbon-lpg: #199e70;
+    --carbon-transport: #c98500;
 }
 
 @layer base {

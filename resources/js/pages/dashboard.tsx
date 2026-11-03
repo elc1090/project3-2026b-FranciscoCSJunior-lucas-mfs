@@ -1,4 +1,4 @@
-import { CarbonSourceBars, useCarbonFormat } from '@/components/carbon-charts';
+import { CarbonSourcePie, useCarbonFormat } from '@/components/carbon-charts';
 import { IsoAdherence } from '@/components/iso-adherence';
 import { DimensionBars, DimensionTag, Page, PageHeader, Section } from '@/components/sostenpyme';
 import { Button } from '@/components/ui/button';
@@ -108,12 +108,7 @@ export default function Dashboard() {
                     <Section title={t('carbon.title')} description={latestCarbon ? carbonFormat.month(latestCarbon.period, 'long') : undefined}>
                         {latestCarbon ? (
                             <>
-                                <p className="font-display text-5xl leading-none font-semibold tabular-nums">
-                                    {carbonFormat.emissions(latestCarbon.total)}
-                                </p>
-                                <div className="mt-6">
-                                    <CarbonSourceBars record={latestCarbon} />
-                                </div>
+                                <CarbonSourcePie record={latestCarbon} />
                                 <Button asChild variant="outline" className="mt-6">
                                     <Link href="/carbon">{t('carbon.seeMore')}</Link>
                                 </Button>

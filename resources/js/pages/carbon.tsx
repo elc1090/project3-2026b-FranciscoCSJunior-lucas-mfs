@@ -1,4 +1,4 @@
-import { CarbonMonthlyColumns, CarbonSourceBars, useCarbonFormat } from '@/components/carbon-charts';
+import { CarbonMonthlyColumns, CarbonSourcePie, useCarbonFormat } from '@/components/carbon-charts';
 import ServerErrors from '@/components/server-errors';
 import { Page, PageHeader, Section } from '@/components/sostenpyme';
 import { Button } from '@/components/ui/button';
@@ -63,7 +63,7 @@ export default function Carbon() {
                 <PageHeader title={t('carbon.title')} description={t('carbon.description')} />
                 <ServerErrors />
 
-                <div className="grid gap-5 lg:grid-cols-[1fr_1.2fr]">
+                <div className="grid gap-5 xl:grid-cols-[1fr_1.2fr]">
                     <Section title={t('carbon.formTitle')} description={t('carbon.formHint')}>
                         <form onSubmit={submit} className="grid gap-4">
                             <div className="grid gap-2">
@@ -114,10 +114,7 @@ export default function Carbon() {
                     <Section title={t('carbon.latestTitle')} description={latest ? format.month(latest.period, 'long') : undefined}>
                         {latest ? (
                             <>
-                                <p className="font-display text-5xl leading-none font-semibold tabular-nums">{format.emissions(latest.total)}</p>
-                                <div className="mt-6">
-                                    <CarbonSourceBars record={latest} />
-                                </div>
+                                <CarbonSourcePie record={latest} />
                             </>
                         ) : (
                             <p className="text-muted-foreground">{t('carbon.empty')}</p>
@@ -132,7 +129,7 @@ export default function Carbon() {
                         </Section>
 
                         <Section title={t('carbon.historyTitle')} className="mt-5">
-                            <div className="overflow-x-auto">
+                            <div className="w-0 min-w-full overflow-x-auto">
                                 <table className="w-full min-w-[40rem] text-left text-sm">
                                     <thead className="text-muted-foreground">
                                         <tr className="border-b">
