@@ -8,6 +8,8 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -45,9 +47,14 @@ class ProfileController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
-        $request->validate([
-            'password' => ['required', 'current_password'],
-        ]);
+        if ($request->user()->auth_provider === 'google') {
+            if ($request->session()->get('google_authenticated_at', 0) < now()->subMinutes(10)->timestamp) {
+                throw ValidationException::withMessages(['confirmation_email' => __('google.reauthenticate')]);
+            }
+            $request->validate(['confirmation_email' => ['required', Rule::in([$request->user()->email])]]);
+        } else {
+            $request->validate(['password' => ['required', 'current_password']]);
+        }
 
         $user = $request->user();
 

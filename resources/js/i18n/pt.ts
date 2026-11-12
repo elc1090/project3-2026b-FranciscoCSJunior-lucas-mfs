@@ -34,6 +34,18 @@ const pt: Messages = {
         saved: 'Salvo',
         cancel: 'Cancelar',
     },
+    google: {
+        continue: 'Continuar com Google',
+        unavailable: 'O acesso com Google estará disponível após a configuração. Você pode usar e-mail e senha.',
+        separateAccounts: 'As contas com senha e Google são independentes, mesmo com o mesmo e-mail. Use o método com que criou sua conta.',
+        emailManaged: 'Este e-mail é verificado e administrado pelo Google.',
+        course: 'Curso ou área de atuação',
+        city: 'Cidade',
+        interests: 'Interesses (opcional)',
+        presentation: 'Apresentação (opcional)',
+        deleteDescription:
+            'Esta ação exclui sua conta e os dados dela. Confirme seu e-mail. Você precisa ter entrado com Google nos últimos dez minutos.',
+    },
     auth: {
         login: {
             pageTitle: 'Entrar',

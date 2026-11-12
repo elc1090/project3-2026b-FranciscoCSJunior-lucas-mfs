@@ -32,6 +32,19 @@ const es = {
         saved: 'Guardado',
         cancel: 'Cancelar',
     },
+    google: {
+        continue: 'Continuar con Google',
+        unavailable: 'El acceso con Google estará disponible después de su configuración. Puedes usar correo y contraseña.',
+        separateAccounts:
+            'Las cuentas con contraseña y Google son independientes, incluso con el mismo correo. Usa el método con el que creaste tu cuenta.',
+        emailManaged: 'Este correo está verificado y administrado por Google.',
+        course: 'Curso o área de actuación',
+        city: 'Ciudad',
+        interests: 'Intereses (opcional)',
+        presentation: 'Presentación (opcional)',
+        deleteDescription:
+            'Esta acción elimina tu cuenta y sus datos. Confirma tu correo. Debes haber entrado con Google en los últimos diez minutos.',
+    },
     auth: {
         login: {
             pageTitle: 'Iniciar sesión',

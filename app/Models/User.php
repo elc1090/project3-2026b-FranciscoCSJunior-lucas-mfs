@@ -11,6 +11,8 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
+    protected $attributes = ['auth_provider' => 'local'];
+
     public function company(): HasOne
     {
         return $this->hasOne(Company::class);
@@ -28,6 +30,13 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'auth_provider',
+        'google_subject',
+        'email_verified_at',
+        'course',
+        'city',
+        'interests',
+        'presentation',
     ];
 
     /**
@@ -38,6 +47,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'google_subject',
     ];
 
     /**

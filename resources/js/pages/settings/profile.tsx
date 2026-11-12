@@ -21,6 +21,10 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
     const { data, setData, patch, errors, processing, recentlySuccessful } = useForm({
         name: auth.user.name,
         email: auth.user.email,
+        course: auth.user.course ?? '',
+        city: auth.user.city ?? '',
+        interests: auth.user.interests ?? '',
+        presentation: auth.user.presentation ?? '',
     });
 
     const submit: FormEventHandler = (e) => {
@@ -65,10 +69,47 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                                 onChange={(e) => setData('email', e.target.value)}
                                 required
                                 autoComplete="username"
+                                readOnly={auth.user.auth_provider === 'google'}
                                 placeholder={t('common.email')}
                             />
 
                             <InputError className="mt-2" message={errors.email} />
+                            {auth.user.auth_provider === 'google' && <p className="text-muted-foreground text-sm">{t('google.emailManaged')}</p>}
+                        </div>
+
+                        <div className="grid gap-2">
+                            <Label htmlFor="course">{t('google.course')}</Label>
+                            <Input id="course" required maxLength={120} value={data.course} onChange={(e) => setData('course', e.target.value)} />
+                            <InputError message={errors.course} />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="city">{t('google.city')}</Label>
+                            <Input
+                                id="city"
+                                required
+                                autoComplete="address-level2"
+                                maxLength={120}
+                                value={data.city}
+                                onChange={(e) => setData('city', e.target.value)}
+                            />
+                            <InputError message={errors.city} />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="interests">{t('google.interests')}</Label>
+                            <Input id="interests" maxLength={1000} value={data.interests} onChange={(e) => setData('interests', e.target.value)} />
+                            <InputError message={errors.interests} />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="presentation">{t('google.presentation')}</Label>
+                            <textarea
+                                id="presentation"
+                                maxLength={2000}
+                                rows={4}
+                                className="border-input bg-background rounded-md border px-3 py-2 text-sm"
+                                value={data.presentation}
+                                onChange={(e) => setData('presentation', e.target.value)}
+                            />
+                            <InputError message={errors.presentation} />
                         </div>
 
                         {mustVerifyEmail && auth.user.email_verified_at === null && (

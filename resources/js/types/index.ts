@@ -22,6 +22,7 @@ export interface NavItem {
 }
 
 export interface SharedData {
+    googleLoginEnabled: boolean;
     name: string;
     quote: { message: string; author: string };
     auth: Auth;
@@ -29,6 +30,11 @@ export interface SharedData {
 }
 
 export interface User {
+    auth_provider: 'local' | 'google';
+    course: string | null;
+    city: string | null;
+    interests: string | null;
+    presentation: string | null;
     id: number;
     name: string;
     email: string;

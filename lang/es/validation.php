@@ -16,7 +16,8 @@ return [
     'between' => ['numeric' => 'El campo :attribute debe estar entre :min y :max.'],
     'min' => ['numeric' => 'El campo :attribute debe ser al menos :min.', 'string' => 'El campo :attribute debe tener al menos :min caracteres.'],
     'max' => ['numeric' => 'El campo :attribute no debe superar :max.', 'string' => 'El campo :attribute no debe superar :max caracteres.'],
-    'attributes' => ['name' => 'nombre', 'email' => 'correo electrónico', 'password' => 'contraseña', 'sector' => 'sector',
+    'attributes' => ['course' => 'curso o área', 'city' => 'ciudad', 'interests' => 'intereses', 'presentation' => 'presentación', 'confirmation_email' => 'correo de confirmación',
+        'name' => 'nombre', 'email' => 'correo electrónico', 'password' => 'contraseña', 'sector' => 'sector',
         'size' => 'tamaño', 'workers' => 'trabajadores', 'region' => 'región', 'answers' => 'respuestas', 'answers.*' => 'respuesta',
         'recommendationId' => 'recomendación', 'owner' => 'responsable', 'dueDate' => 'fecha límite', 'indicator' => 'indicador', 'status' => 'estado'],
 ];

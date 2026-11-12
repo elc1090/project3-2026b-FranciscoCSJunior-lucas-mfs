@@ -15,8 +15,10 @@ class ConfirmablePasswordController extends Controller
     /**
      * Show the confirm password page.
      */
-    public function show(): Response
+    public function show(Request $request): Response
     {
+        abort_if($request->user()->auth_provider === 'google', 403);
+
         return Inertia::render('auth/confirm-password');
     }
 
@@ -25,8 +27,11 @@ class ConfirmablePasswordController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        abort_if($request->user()->auth_provider === 'google', 403);
+
         if (! Auth::guard('web')->validate([
             'email' => $request->user()->email,
+            'auth_provider' => 'local',
             'password' => $request->password,
         ])) {
             throw ValidationException::withMessages([

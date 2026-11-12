@@ -97,6 +97,10 @@ Os textos da interface ficam em dicionários (`es.ts` e `pt.ts`) acessados por u
 
 ## Tecnologias
 
+### Login Google e perfil adicional
+
+A branch `codex/auth-profile` adapta o fluxo de [demo-auth-profile](https://github.com/elc1090/demo-auth-profile) ao SOSTENPYME: login com senha ou Google, perfil com curso/área, cidade, interesses e apresentação, e persistência dos dados entre acessos. As contas Google e com senha permanecem separadas, mesmo com e-mail igual. O login Google depende da configuração de um cliente OAuth; o login com senha funciona sem essas credenciais. O passo a passo de configuração e testes locais está em [docs/auth-profile.md](docs/auth-profile.md). Esta implementação permanece na branch de trabalho, sem alteração da produção.
+
 ### Linguagens e afins
 
 - PHP 8.4 com [Laravel 12](https://laravel.com/) (starter kit React)

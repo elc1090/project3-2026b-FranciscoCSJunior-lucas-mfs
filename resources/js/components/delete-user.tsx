@@ -1,4 +1,5 @@
-import { useForm } from '@inertiajs/react';
+import type { SharedData } from '@/types';
+import { useForm, usePage } from '@inertiajs/react';
 import { FormEventHandler, useRef } from 'react';
 
 // Components...
@@ -14,8 +15,9 @@ import { useTranslation } from '@/i18n';
 
 export default function DeleteUser() {
     const { t } = useTranslation();
+    const isGoogle = usePage<SharedData>().props.auth.user.auth_provider === 'google';
     const passwordInput = useRef<HTMLInputElement>(null);
-    const { data, setData, delete: destroy, processing, reset, errors, clearErrors } = useForm({ password: '' });
+    const { data, setData, delete: destroy, processing, reset, errors, clearErrors } = useForm({ password: '', confirmation_email: '' });
 
     const deleteUser: FormEventHandler = (e) => {
         e.preventDefault();
@@ -48,25 +50,25 @@ export default function DeleteUser() {
                     </DialogTrigger>
                     <DialogContent>
                         <DialogTitle>{t('settings.deleteConfirmTitle')}</DialogTitle>
-                        <DialogDescription>{t('settings.deleteConfirmDescription')}</DialogDescription>
+                        <DialogDescription>{t(isGoogle ? 'google.deleteDescription' : 'settings.deleteConfirmDescription')}</DialogDescription>
                         <form className="space-y-6" onSubmit={deleteUser}>
                             <div className="grid gap-2">
                                 <Label htmlFor="password" className="sr-only">
-                                    {t('common.password')}
+                                    {t(isGoogle ? 'common.email' : 'common.password')}
                                 </Label>
 
                                 <Input
                                     id="password"
-                                    type="password"
-                                    name="password"
+                                    type={isGoogle ? 'email' : 'password'}
+                                    name={isGoogle ? 'confirmation_email' : 'password'}
                                     ref={passwordInput}
-                                    value={data.password}
-                                    onChange={(e) => setData('password', e.target.value)}
-                                    placeholder={t('common.password')}
-                                    autoComplete="current-password"
+                                    value={isGoogle ? data.confirmation_email : data.password}
+                                    onChange={(e) => setData(isGoogle ? 'confirmation_email' : 'password', e.target.value)}
+                                    placeholder={t(isGoogle ? 'common.email' : 'common.password')}
+                                    autoComplete={isGoogle ? 'email' : 'current-password'}
                                 />
 
-                                <InputError message={errors.password} />
+                                <InputError message={isGoogle ? errors.confirmation_email : errors.password} />
                             </div>
 
                             <DialogFooter>

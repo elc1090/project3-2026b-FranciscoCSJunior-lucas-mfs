@@ -33,7 +33,9 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return $request->user()->course && $request->user()->city
+            ? redirect()->intended(route('dashboard', absolute: false))
+            : to_route('profile.edit');
     }
 
     /**

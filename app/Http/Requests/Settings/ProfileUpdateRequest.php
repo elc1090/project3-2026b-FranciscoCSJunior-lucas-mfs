@@ -25,8 +25,13 @@ class ProfileUpdateRequest extends FormRequest
                 'lowercase',
                 'email',
                 'max:255',
-                Rule::unique(User::class)->ignore($this->user()->id),
+                Rule::unique(User::class)->where('auth_provider', $this->user()->auth_provider)->ignore($this->user()->id),
+                ...($this->user()->auth_provider === 'google' ? [Rule::in([$this->user()->email])] : []),
             ],
+            'course' => ['sometimes', 'required', 'string', 'max:120'],
+            'city' => ['sometimes', 'required', 'string', 'max:120'],
+            'interests' => ['sometimes', 'nullable', 'string', 'max:1000'],
+            'presentation' => ['sometimes', 'nullable', 'string', 'max:2000'],
         ];
     }
 }
