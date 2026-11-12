@@ -99,6 +99,8 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                     </Button>
                 </div>
 
+                <GoogleLogin />
+
                 <div className="text-muted-foreground text-center text-sm">
                     {t('auth.login.noAccount')}{' '}
                     <TextLink href={route('register')} tabIndex={5}>
@@ -106,7 +108,6 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                     </TextLink>
                 </div>
             </form>
-            <GoogleLogin />
 
             {status && <div className="mb-4 text-center text-sm font-medium text-green-600">{status}</div>}
         </AuthLayout>

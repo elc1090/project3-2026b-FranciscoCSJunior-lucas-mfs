@@ -33,6 +33,7 @@ const es = {
         cancel: 'Cancelar',
     },
     google: {
+        or: 'o',
         continue: 'Continuar con Google',
         unavailable: 'El acceso con Google estará disponible después de su configuración. Puedes usar correo y contraseña.',
         separateAccounts:
@@ -46,6 +47,15 @@ const es = {
             'Esta acción elimina tu cuenta y sus datos. Confirma tu correo. Debes haber entrado con Google en los últimos diez minutos.',
     },
     auth: {
+        hero: {
+            title: 'La sostenibilidad de tu pyme en una sola plataforma',
+            description:
+                'Diagnostica tu empresa en las dimensiones ambiental, social, económica y de gobernanza, y convierte los resultados en un plan de acción.',
+            benefit1: 'Diagnóstico con 20 preguntas y resultados de 0 a 100',
+            benefit2: 'Huella de carbono mensual y checklist ISO 14001',
+            benefit3: 'Plan de acción con responsables, plazos e indicadores',
+            benefit4: 'Disponible en español y portugués',
+        },
         login: {
             pageTitle: 'Iniciar sesión',
             title: 'Inicia sesión en tu cuenta',

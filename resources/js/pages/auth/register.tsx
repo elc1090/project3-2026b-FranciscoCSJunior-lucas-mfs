@@ -110,6 +110,8 @@ export default function Register() {
                     </Button>
                 </div>
 
+                <GoogleLogin />
+
                 <div className="text-muted-foreground text-center text-sm">
                     {t('auth.register.hasAccount')}{' '}
                     <TextLink href={route('login')} tabIndex={6}>
@@ -117,7 +119,6 @@ export default function Register() {
                     </TextLink>
                 </div>
             </form>
-            <GoogleLogin />
         </AuthLayout>
     );
 }

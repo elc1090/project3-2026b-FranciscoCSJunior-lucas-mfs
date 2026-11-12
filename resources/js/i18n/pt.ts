@@ -35,6 +35,7 @@ const pt: Messages = {
         cancel: 'Cancelar',
     },
     google: {
+        or: 'ou',
         continue: 'Continuar com Google',
         unavailable: 'O acesso com Google estará disponível após a configuração. Você pode usar e-mail e senha.',
         separateAccounts: 'As contas com senha e Google são independentes, mesmo com o mesmo e-mail. Use o método com que criou sua conta.',
@@ -47,6 +48,15 @@ const pt: Messages = {
             'Esta ação exclui sua conta e os dados dela. Confirme seu e-mail. Você precisa ter entrado com Google nos últimos dez minutos.',
     },
     auth: {
+        hero: {
+            title: 'A sustentabilidade da sua empresa em uma só plataforma',
+            description:
+                'Faça o diagnóstico da sua empresa nas dimensões ambiental, social, econômica e de governança, e transforme os resultados em um plano de ação.',
+            benefit1: 'Diagnóstico com 20 perguntas e resultados de 0 a 100',
+            benefit2: 'Pegada de carbono mensal e checklist ISO 14001',
+            benefit3: 'Plano de ação com responsáveis, prazos e indicadores',
+            benefit4: 'Disponível em espanhol e português',
+        },
         login: {
             pageTitle: 'Entrar',
             title: 'Entre na sua conta',
