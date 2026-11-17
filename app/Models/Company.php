@@ -37,4 +37,9 @@ class Company extends Model
     {
         return $this->belongsToMany(IsoRequirement::class, 'company_iso_requirement');
     }
+
+    public function aiInsights()
+    {
+        return $this->hasMany(AiInsight::class);
+    }
 }

@@ -12,9 +12,12 @@ use App\Models\Recommendation;
 use App\Models\Sdg;
 use App\Services\CarbonFootprint;
 use App\Services\DiagnosisScoring;
+use App\Services\GeminiException;
+use App\Services\SustainabilityAdvisor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
@@ -25,7 +28,7 @@ class SustainabilityController extends Controller
         return $request->user()->company()->firstOrCreate([], ['name' => $request->user()->name]);
     }
 
-    public function show(Request $request, DiagnosisScoring $scoring, CarbonFootprint $carbon)
+    public function show(Request $request, DiagnosisScoring $scoring, CarbonFootprint $carbon, SustainabilityAdvisor $advisor)
     {
         $company = $this->company($request);
         Gate::authorize('view', $company);
@@ -61,6 +64,9 @@ class SustainabilityController extends Controller
             'isoRequirements' => IsoRequirement::orderBy('id')->get()->map(fn ($i) => ['id' => $i->code, 'clause' => $i->clause,
                 'title' => $localized($i, 'title'), 'description' => $localized($i, 'description')]),
             'completedIsoRequirements' => $company->isoRequirements()->pluck('code'),
+            'aiEnabled' => $advisor->enabled(),
+            'aiInsights' => (object) $company->aiInsights()->get()->mapWithKeys(fn ($i) => [$i->locale => [
+                ...$i->content, 'generatedAt' => $i->updated_at->toDateString(), 'outdated' => $i->diagnosis_id !== $latest?->id]])->all(),
             ...$scoring->calculate($questions->filter(fn ($q) => ! $q->sector || $q->sector === $company->sector), $answers),
         ]);
     }
@@ -179,6 +185,37 @@ class SustainabilityController extends Controller
     {
         Gate::authorize('delete', $record);
         $record->delete();
+
+        return back();
+    }
+
+    /** Gera (ou gera de novo) as recomendações com IA para o último diagnóstico, no idioma pedido. */
+    public function storeAiInsight(Request $request, SustainabilityAdvisor $advisor)
+    {
+        $company = $this->company($request);
+        Gate::authorize('update', $company);
+        $locale = $request->validate(['locale' => ['required', Rule::in(['es', 'pt'])]])['locale'];
+        if (! $advisor->enabled()) {
+            return back()->withErrors(['ai' => 'unavailable']);
+        }
+        $diagnosis = $company->diagnoses()->latest('id')->first();
+        if (! $diagnosis) {
+            return back()->withErrors(['ai' => 'noDiagnosis']);
+        }
+        // Protege a cota gratuita: no máximo 5 gerações por hora para cada usuário.
+        $key = 'ai-insight:'.$request->user()->id;
+        if (RateLimiter::tooManyAttempts($key, 5)) {
+            return back()->withErrors(['ai' => 'tooMany']);
+        }
+        RateLimiter::hit($key, 3600);
+        try {
+            $content = $advisor->advise($company, $diagnosis, $locale);
+        } catch (GeminiException $e) {
+            report($e);
+
+            return back()->withErrors(['ai' => $e->reason]);
+        }
+        $company->aiInsights()->updateOrCreate(['locale' => $locale], ['diagnosis_id' => $diagnosis->id, 'content' => $content]);
 
         return back();
     }

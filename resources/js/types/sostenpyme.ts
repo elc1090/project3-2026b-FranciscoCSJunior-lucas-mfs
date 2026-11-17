@@ -97,6 +97,14 @@ export interface CarbonRecord {
     total: number;
 }
 
+/** Recomendações geradas pela IA (Gemini) para o último diagnóstico. */
+export interface AiInsight {
+    summary: string;
+    actions: { area: AreaKey; title: string; description: string; firstStep: string }[];
+    generatedAt: string; // AAAA-MM-DD
+    outdated: boolean; // true quando já existe um diagnóstico mais novo
+}
+
 export interface IsoRequirement {
     id: string;
     clause: string;

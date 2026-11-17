@@ -1,3 +1,4 @@
+import { AiInsights } from '@/components/ai-insights';
 import ServerErrors from '@/components/server-errors';
 import { DimensionBars, DimensionTag, Page, PageHeader, SdgTags, Section } from '@/components/sostenpyme';
 import { Button } from '@/components/ui/button';
@@ -46,7 +47,7 @@ export default function Results() {
             <Head title={t('results.title')} />
             <Page>
                 <PageHeader title={t('results.title')} description={t('results.description', { threshold: PRIORITY_THRESHOLD })} />
-                <ServerErrors />
+                <ServerErrors ignore={['ai']} />
 
                 <div className="grid gap-5 lg:grid-cols-[14rem_1fr]">
                     <Section className="flex flex-col justify-center">
@@ -59,6 +60,8 @@ export default function Results() {
                         <p className="text-muted-foreground mt-6 text-sm">{t('results.socialNote')}</p>
                     </Section>
                 </div>
+
+                <AiInsights />
 
                 <section className="mt-10">
                     <h2 className="text-2xl font-semibold">{t('results.prioritiesTitle')}</h2>

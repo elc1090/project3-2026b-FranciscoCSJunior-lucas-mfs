@@ -17,6 +17,7 @@ Route::middleware('auth')->group(function () {
     Route::post('carbon', [SustainabilityController::class, 'storeCarbon'])->name('carbon.store');
     Route::delete('carbon/{record}', [SustainabilityController::class, 'destroyCarbon'])->name('carbon.destroy');
     Route::post('iso/{requirement:code}/toggle', [SustainabilityController::class, 'toggleIso'])->name('iso.toggle');
+    Route::post('results/ai', [SustainabilityController::class, 'storeAiInsight'])->name('ai.store');
 });
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

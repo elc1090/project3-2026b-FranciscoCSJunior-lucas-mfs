@@ -1,5 +1,6 @@
 import type { SharedData } from '@/types';
 import type {
+    AiInsight,
     AnswerValue,
     AreaKey,
     CarbonRecord,
@@ -29,6 +30,8 @@ export interface SustainabilityData extends SharedData {
     carbonFactors: Record<string, number>;
     isoRequirements: IsoRequirement[];
     completedIsoRequirements: string[];
+    aiEnabled: boolean;
+    aiInsights: Partial<Record<'es' | 'pt', AiInsight>>;
     scores: Record<AreaKey, number>;
     dimensionScores: Record<DimensionKey, number>;
     totalScore: { points: number; max: number; percent: number };
