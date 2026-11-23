@@ -112,6 +112,8 @@ export default function Register() {
 
                 <GoogleLogin />
 
+                <p className="text-muted-foreground text-center text-xs">{t('auth.register.privacyNote')}</p>
+
                 <div className="text-muted-foreground text-center text-sm">
                     {t('auth.register.hasAccount')}{' '}
                     <TextLink href={route('login')} tabIndex={6}>

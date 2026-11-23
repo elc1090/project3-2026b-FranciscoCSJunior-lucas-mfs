@@ -2,13 +2,36 @@ import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { useTranslation } from '@/i18n';
-import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/react';
-import { BadgeCheck, BookOpen, ChartNoAxesColumn, ClipboardList, Cloud, House, ListChecks, Route, Store, TrendingUp } from 'lucide-react';
+import { type NavItem, type SharedData } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
+import {
+    BadgeCheck,
+    BookOpen,
+    Building2,
+    ChartNoAxesColumn,
+    ClipboardList,
+    Cloud,
+    House,
+    LayoutDashboard,
+    ListChecks,
+    Route,
+    Store,
+    TrendingUp,
+    Users,
+} from 'lucide-react';
 import AppLogo from './app-logo';
 
 export function AppSidebar() {
     const { t } = useTranslation();
+    const { auth } = usePage<SharedData>().props;
+    const isAdmin = auth.user.role === 'admin';
+
+    // Administradores (equipe do Chile) veem só o painel de administração.
+    const adminNavItems: NavItem[] = [
+        { title: t('admin.nav.overview'), url: '/admin', icon: LayoutDashboard },
+        { title: t('admin.nav.companies'), url: '/admin/companies', icon: Building2 },
+        { title: t('admin.nav.users'), url: '/admin/users', icon: Users },
+    ];
 
     const mainNavItems: NavItem[] = [
         { title: t('nav.home'), url: '/dashboard', icon: House },
@@ -29,7 +52,7 @@ export function AppSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href="/dashboard" prefetch>
+                            <Link href={isAdmin ? '/admin' : '/dashboard'} prefetch>
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>
@@ -38,7 +61,7 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
+                <NavMain items={isAdmin ? adminNavItems : mainNavItems} title={isAdmin ? t('admin.badge') : undefined} />
             </SidebarContent>
 
             <SidebarFooter>

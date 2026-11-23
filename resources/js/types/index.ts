@@ -31,6 +31,10 @@ export interface SharedData {
 
 export interface User {
     auth_provider: 'local' | 'google';
+    /** 'admin' = equipe do Chile (painel de administração); 'company' = usuário de empresa. */
+    role: 'company' | 'admin';
+    /** true quando a senha foi definida por um administrador e ainda não foi trocada. */
+    must_change_password: boolean;
     course: string | null;
     city: string | null;
     interests: string | null;

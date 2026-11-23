@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request as HttpRequest;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Sleep;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
@@ -20,6 +21,7 @@ class AiInsightTest extends TestCase
         $this->withoutVite();
         $this->seed();
         config(['services.gemini.key' => 'test-key', 'services.gemini.model' => 'gemini-test']);
+        Sleep::fake();
     }
 
     private function diagnosedUser(int $value = 1): User
@@ -83,17 +85,38 @@ class AiInsightTest extends TestCase
         $this->get('/results')->assertInertia(fn (Assert $page) => $page->where('aiInsights.es.outdated', false));
     }
 
+    public function test_retries_transient_failures_once(): void
+    {
+        $this->diagnosedUser();
+        Http::fake(['*/interactions' => Http::sequence()
+            ->push('overloaded', 503)
+            ->push($this->geminiReply($this->validInsight()))]);
+
+        $this->post('/results/ai', ['locale' => 'pt'])->assertSessionHasNoErrors();
+        Http::assertSentCount(2);
+        $this->assertDatabaseCount('ai_insights', 1);
+    }
+
     public function test_reports_errors_without_saving(): void
     {
         $this->diagnosedUser();
         Http::fake(['*/interactions' => Http::sequence()
             ->push(['error' => ['code' => 429]], 429)
             ->push($this->geminiReply(['summary' => '', 'actions' => []]))
+            ->push(['error' => ['code' => 400]], 400)
+            ->push('not json', 200)
             ->push('server error', 500)]);
 
+        // Limite: sem nova tentativa.
         $this->post('/results/ai', ['locale' => 'pt'])->assertSessionHasErrors(['ai' => 'quota']);
+        // Resposta sem conteúdo útil: validada depois, sem nova tentativa.
         $this->post('/results/ai', ['locale' => 'pt'])->assertSessionHasErrors(['ai' => 'failed']);
+        // Pedido inválido (4xx): sem nova tentativa.
         $this->post('/results/ai', ['locale' => 'pt'])->assertSessionHasErrors(['ai' => 'failed']);
+        Http::assertSentCount(3);
+        // Duas falhas passageiras seguidas: tenta duas vezes e desiste.
+        $this->post('/results/ai', ['locale' => 'pt'])->assertSessionHasErrors(['ai' => 'failed']);
+        Http::assertSentCount(5);
         $this->post('/results/ai', ['locale' => 'en'])->assertSessionHasErrors('locale');
         $this->assertDatabaseCount('ai_insights', 0);
     }
