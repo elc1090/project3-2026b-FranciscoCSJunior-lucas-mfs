@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\EnsureUserIsAdmin;
+use App\Http\Middleware\EnsureUserIsCompany;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
@@ -14,6 +16,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->alias([
+            'admin' => EnsureUserIsAdmin::class,
+            'company' => EnsureUserIsCompany::class,
+        ]);
         // Render terminates HTTPS before forwarding requests to Apache.
         if (getenv('APP_ENV') === 'production') {
             $middleware->trustProxies(at: '*');

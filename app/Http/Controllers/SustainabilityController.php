@@ -32,12 +32,18 @@ class SustainabilityController extends Controller
     {
         $company = $this->company($request);
         Gate::authorize('view', $company);
+
+        return Inertia::render($request->route()->getName(), $this->companyProps($company, $scoring, $carbon, $advisor));
+    }
+
+    public function companyProps(Company $company, DiagnosisScoring $scoring, CarbonFootprint $carbon, SustainabilityAdvisor $advisor): array
+    {
         $latest = $company->diagnoses()->latest('id')->first();
         $answers = $latest ? $latest->answers()->with('question')->get()->mapWithKeys(fn ($a) => [$a->question->code => $a->value])->all() : [];
         $questions = Question::with('recommendation')->orderBy('id')->get();
         $localized = fn ($row, $field) => ['es' => $row->{$field.'_es'}, 'pt' => $row->{$field.'_pt'}];
 
-        return Inertia::render($request->route()->getName(), [
+        return [
             'company' => $company->only('name', 'sector', 'size', 'workers', 'region'), 'answers' => (object) $answers,
             'plan' => $company->actions()->with('recommendation')->orderBy('id')->get()->map(fn ($a) => [
                 'id' => (string) $a->id, 'recommendationId' => $a->recommendation->code, 'owner' => $a->owner,
@@ -68,7 +74,7 @@ class SustainabilityController extends Controller
             'aiInsights' => (object) $company->aiInsights()->get()->mapWithKeys(fn ($i) => [$i->locale => [
                 ...$i->content, 'generatedAt' => $i->updated_at->toDateString(), 'outdated' => $i->diagnosis_id !== $latest?->id]])->all(),
             ...$scoring->calculate($questions->filter(fn ($q) => ! $q->sector || $q->sector === $company->sector), $answers),
-        ]);
+        ];
     }
 
     public function updateCompany(Request $request)

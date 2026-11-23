@@ -57,7 +57,9 @@ class GoogleAuthController extends Controller
                     'email_verified_at' => now(),
                     'password' => null,
                 ]);
-                $user->company()->firstOrCreate([], ['name' => $user->name]);
+                if (! $user->isAdmin()) {
+                    $user->company()->firstOrCreate([], ['name' => $user->name]);
+                }
 
                 return $user;
             });
@@ -76,6 +78,10 @@ class GoogleAuthController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
         $request->session()->put('google_authenticated_at', now()->timestamp);
+
+        if ($user->isAdmin()) {
+            return to_route('admin.dashboard');
+        }
 
         return $user->course && $user->city ? redirect()->intended(route('dashboard', absolute: false)) : to_route('profile.edit');
     }

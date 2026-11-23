@@ -9,11 +9,11 @@ class CompanyPolicy
 {
     public function view(User $user, Company $company): bool
     {
-        return $company->user_id === $user->id;
+        return $user->isAdmin() || $company->user_id === $user->id;
     }
 
     public function update(User $user, Company $company): bool
     {
-        return $this->view($user, $company);
+        return ! $user->isAdmin() && $company->user_id === $user->id;
     }
 }

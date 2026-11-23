@@ -4,7 +4,7 @@ use App\Http\Controllers\SustainabilityController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/dashboard')->name('home');
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'company'])->group(function () {
     foreach (['dashboard', 'company', 'diagnosis', 'results', 'path', 'plan', 'tracking', 'carbon', 'iso', 'explore'] as $page) {
         Route::get($page, [SustainabilityController::class, 'show'])->name($page);
     }
@@ -20,4 +20,5 @@ Route::middleware('auth')->group(function () {
     Route::post('results/ai', [SustainabilityController::class, 'storeAiInsight'])->name('ai.store');
 });
 require __DIR__.'/settings.php';
+require __DIR__.'/admin.php';
 require __DIR__.'/auth.php';

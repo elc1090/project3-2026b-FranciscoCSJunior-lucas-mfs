@@ -1,5 +1,7 @@
 # Painel de administração: o que falta no backend
 
+> Implementação: branch `codex/admin-backend`. O roteiro para o responsável pelo deploy está em [admin-deploy.md](admin-deploy.md). As seções abaixo preservam os requisitos originais do frontend.
+
 O frontend do painel já está pronto. Este documento descreve o que o backend precisa fazer para ligá-lo aos dados reais.
 
 O formato exato dos dados que cada página espera está em [`resources/js/types/admin.ts`](../resources/js/types/admin.ts). **Esse arquivo é o contrato.** Se algum nome precisar mudar, mude nos dois lados.

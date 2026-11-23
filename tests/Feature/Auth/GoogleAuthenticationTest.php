@@ -253,4 +253,15 @@ class GoogleAuthenticationTest extends TestCase
         $this->assertGuest();
         $this->assertDatabaseCount('users', 0);
     }
+
+    public function test_google_administrator_goes_to_admin_without_creating_a_company(): void
+    {
+        $user = User::factory()->create(['role' => 'admin', 'auth_provider' => 'google',
+            'google_subject' => 'google-subject-123', 'password' => null]);
+        $this->mockIdentity();
+        $this->completeGoogleLogin()->assertRedirect('/admin')->assertSessionHasNoErrors();
+        $this->assertAuthenticatedAs($user);
+        $this->assertNull($user->fresh()->company);
+        $this->assertNotNull($user->fresh()->last_login_at);
+    }
 }
