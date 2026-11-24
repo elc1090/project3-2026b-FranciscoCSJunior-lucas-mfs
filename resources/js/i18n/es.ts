@@ -157,6 +157,13 @@ const es = {
         seeResults: 'Ver resultado completo',
         seePlan: 'Ir a mi plan',
         goalsSummary: '{done} de {total} metas de la ruta cumplidas',
+        learn: {
+            title: 'Aprende sobre sostenibilidad',
+            description: 'Temas clave para tu pyme. Desliza o usa las flechas para pasar de un tema a otro.',
+            position: '{current} de {total}',
+            previous: 'Tema anterior',
+            next: 'Tema siguiente',
+        },
     },
     company: {
         title: 'Mi empresa',
@@ -244,8 +251,6 @@ const es = {
         current: 'Actual ({date})',
         noPrevious: 'Aún no hay un diagnóstico anterior para comparar.',
         history: 'Historial',
-        actions: 'Acciones del plan',
-        actionsDone: '{done} de {total} hechas',
     },
     explore: {
         title: 'Explorar ODS',

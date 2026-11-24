@@ -158,6 +158,13 @@ const pt: Messages = {
         seeResults: 'Ver resultado completo',
         seePlan: 'Ir para meu plano',
         goalsSummary: '{done} de {total} metas da rota cumpridas',
+        learn: {
+            title: 'Aprenda sobre sustentabilidade',
+            description: 'Temas importantes para a sua empresa. Arraste ou use as setas para passar de um tema a outro.',
+            position: '{current} de {total}',
+            previous: 'Tema anterior',
+            next: 'Próximo tema',
+        },
     },
     company: {
         title: 'Minha empresa',
@@ -245,8 +252,6 @@ const pt: Messages = {
         current: 'Atual ({date})',
         noPrevious: 'Ainda não há um diagnóstico anterior para comparar.',
         history: 'Histórico',
-        actions: 'Ações do plano',
-        actionsDone: '{done} de {total} concluídas',
     },
     explore: {
         title: 'Explorar ODS',

@@ -1,37 +1,18 @@
-import { CarbonSourcePie, useCarbonFormat } from '@/components/carbon-charts';
-import { IsoAdherence } from '@/components/iso-adherence';
-import { DimensionBars, DimensionTag, Page, PageHeader, Section } from '@/components/sostenpyme';
-import { Button } from '@/components/ui/button';
+import { LearnCarousel } from '@/components/learn-carousel';
+import { Page, PageHeader } from '@/components/sostenpyme';
 import { useSustainability } from '@/hooks/use-sustainability';
 import { useTranslation } from '@/i18n';
 import AppLayout from '@/layouts/app-layout';
-import { areaDimension } from '@/lib/scoring';
 import { cn } from '@/lib/utils';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { Check } from 'lucide-react';
 
 export default function Dashboard() {
-    const { t, tl } = useTranslation();
-    const {
-        company,
-        plan,
-        completedGoals,
-        history,
-        pathGoals,
-        totalScore: total,
-        priorities,
-        complete,
-        carbonRecords,
-        isoRequirements,
-        completedIsoRequirements,
-    } = useSustainability();
-    const carbonFormat = useCarbonFormat();
-    const latestCarbon = carbonRecords.at(-1);
+    const { t } = useTranslation();
+    const { company, plan, history, complete } = useSustainability();
 
     const breadcrumbs: BreadcrumbItem[] = [{ title: t('home.title'), href: '/dashboard' }];
-    const topPriorities = priorities.slice(0, 3);
-    const done = plan.filter((a) => a.status === 'done').length;
 
     const steps = [
         { label: t('home.stepCompany'), href: '/company', complete: Boolean(company.name && company.region) },
@@ -52,84 +33,7 @@ export default function Dashboard() {
                         .join(', ')}
                 />
 
-                <div className="grid items-start gap-5 lg:grid-cols-2">
-                    <div className="flex flex-col gap-5">
-                        <Section title={t('home.scoresTitle')}>
-                            {!complete ? (
-                                <>
-                                    <p>{t('results.incomplete')}</p>
-                                    <Button asChild className="mt-4">
-                                        <Link href="/diagnosis">{t('results.goToDiagnosis')}</Link>
-                                    </Button>
-                                </>
-                            ) : (
-                                <>
-                                    <div className="mb-6 flex items-baseline gap-3">
-                                        <span className="font-display text-6xl leading-none font-semibold tabular-nums">{total.percent}</span>
-                                        <span className="text-muted-foreground">
-                                            {t('results.total')}, {t('results.points', { points: total.points, max: total.max })}
-                                        </span>
-                                    </div>
-                                    <DimensionBars />
-                                    <Button asChild variant="outline" className="mt-6">
-                                        <Link href="/results">{t('home.seeResults')}</Link>
-                                    </Button>
-                                </>
-                            )}
-                        </Section>
-
-                        <Section title={t('iso.title')}>
-                            <IsoAdherence done={completedIsoRequirements.length} total={isoRequirements.length} />
-                            <Button asChild variant="outline" className="mt-6">
-                                <Link href="/iso">{t('iso.seeMore')}</Link>
-                            </Button>
-                        </Section>
-                    </div>
-
-                    <div className="flex flex-col gap-5">
-                        <Section title={t('carbon.title')} description={latestCarbon ? carbonFormat.month(latestCarbon.period, 'long') : undefined}>
-                            {latestCarbon ? (
-                                <>
-                                    <CarbonSourcePie record={latestCarbon} />
-                                    <Button asChild variant="outline" className="mt-6">
-                                        <Link href="/carbon">{t('carbon.seeMore')}</Link>
-                                    </Button>
-                                </>
-                            ) : (
-                                <>
-                                    <p>{t('carbon.empty')}</p>
-                                    <Button asChild className="mt-4">
-                                        <Link href="/carbon">{t('carbon.goTo')}</Link>
-                                    </Button>
-                                </>
-                            )}
-                        </Section>
-
-                        <Section title={t('home.prioritiesTitle')}>
-                            <ul className="flex flex-col gap-4">
-                                {topPriorities.map((priority) => (
-                                    <li key={priority.area} className="flex flex-col gap-1">
-                                        <DimensionTag
-                                            dimension={areaDimension(priority.area)}
-                                            label={`${t(`dimension.${priority.area}`)} ${priority.score}`}
-                                        />
-                                        {priority.recommendations[0] && <span>{tl(priority.recommendations[0].title)}</span>}
-                                    </li>
-                                ))}
-                            </ul>
-                        </Section>
-
-                        <Section title={t('home.planTitle')}>
-                            <p className="font-medium">{t('home.planSummary', { done, total: plan.length })}</p>
-                            <p className="text-muted-foreground mt-1 text-sm">
-                                {t('home.goalsSummary', { done: completedGoals.length, total: pathGoals.length })}
-                            </p>
-                            <Button asChild variant="outline" className="mt-4">
-                                <Link href="/plan">{t('home.seePlan')}</Link>
-                            </Button>
-                        </Section>
-                    </div>
-                </div>
+                <LearnCarousel />
 
                 <section className="mt-10">
                     <h2 className="text-xl font-semibold">{t('home.steps')}</h2>
