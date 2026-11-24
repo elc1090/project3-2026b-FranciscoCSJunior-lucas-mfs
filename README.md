@@ -1,6 +1,6 @@
 # SOSTENPYME: diagnóstico e plano de sustentabilidade para pymes
 
-![GIF animado mostrando o SOSTENPYME em uso](./Sostenpyme.gif "Demonstração do SOSTENPYME")
+![GIF animado mostrando o SOSTENPYME em uso](./Sostenpyme_final.gif "Demonstração do SOSTENPYME")
 
 
 
@@ -47,19 +47,8 @@ Funcionalidades que já existiam no Projeto 3:
 
 ### Processo
 
-<!-- Seção a ser escrita pela dupla, em primeira pessoa e sem ajuda de IA (exigência do enunciado).
-Explicar como a dupla se dividiu e, para cada um, as escolhas, o que já sabia, dúvidas e dificuldades.
-Lembretes do que foi feito no projeto final (pelo histórico de commits):
-- Francisco: pegada de carbono, checklist ISO 14001 e gráficos (03/11); nova tela de entrada (12/11);
-  recomendações com Gemini e nova tentativa automática (17/11 e 23/11); frontend do painel de admin e
-  especificação do backend em docs/admin-backend.md (23/11); cards informativos do Início e quadros no Seguimiento (23/11)
-- Lucas: login com Google e perfil adicional, incluindo a tolerância de relógio na validação do token (12/11);
-  backend do painel de admin, primeiro admin pelas variáveis do Render e guia de publicação em docs/admin-deploy.md (23/11)
-- Dificuldades que podem ser citadas: chave do Gemini (403 com a chave vazia no .env local), erro passageiro do Gemini
-  resolvido com nova tentativa, como criar o primeiro admin sem shell no plano gratuito do Render, tabelas e
-  carrossel estourando a largura no celular, conteúdo vindo das conversas por WhatsApp com a equipe do Chile -->
-
-_Seção em elaboração._
+O processo desse último projeto foi mais tranquilo e colaborativo que os outros, tentamos ir fazendo aos poucos e ir incrementando ao passo que íamos fazendo as reuniões com a Constanza e o Victor e pegando o feedback que ele nos traziam. Quanto a parte do desenvolvimento em si, continuamos na divisão do Lucas fazer o backend e o Francisco o frontend. Mas no geral sempre nos comunicamos para decidir quem ficaria responsável por tais mudanças. O que ajudou muito foi o fato de continuarmos com o projeto 3 que já estávamos um pouco mais habituados às tecnologias e a como o estava sendo o fluxo do site. Tivemos algumas dificuldades de conseguir entender quais mudanças os nosso colegas chilenos queriam que fizéssemos, pois eles falavam de uma maneira um pouco aberta e nós precisávamos de algo mais prático. Mas, no fim das contas conseguimos nos entender e eles eram bem prestativos. 
+Eu, Francisco, fiquei responsável pelas mudanças no frontend, que consistiam adicionar novos menus (Pegada de carbono e chcklist ISO 14001), gráficos, fazer alterações na tela de login. Foi algo tranquilo porque era mais do que já tinha feito antes, só o tipo de gráfico que mudou. Também mudei um pouco o fluxo dentro do site, por pedido dos chilenos, eles queriam que o início fosse algo mais informativo, com textos sobre questões de ética, meio ambiente e governança. Também fiz uma parte do processo de adicionar o login com o Google, que consistiu em pegar as informações do meu projeto no Google Cloud Console e colocá-las no Render, o Lucas fez uma parte e eu fiz a outra, porque o render estava na minha conta aí decidimos que eu já colocasse através do meu e-mail. Mas ele cuidou dessa parte do banco. Também fiquei responsável por colocar o diagnóstico de IA no site, utilizei o Google Gemini e não tive grandes dificuldades seguindo aquele tutorial da professora e pedindo ajuda ao Claude para adaptar para a nossa aplicação, visto que estávamos usando tecnologias diferentes do exemplo disponibilizado. Tive que adicionar uma tentativa automática para quando o Gemini desse falha na hora de gerar o diagnóstico e até agora está funcionando bem. Além disso, fiz o frontend do painel do admin que fizemos para os chilenos poderem ter um controle melhor do que os usuários estão fazendo e eles podem visualizar as empresas e usuários. No geral, tive uma experiência muito enriquecedora, aprendi coisas novas usando o Claude.
 
 
 
